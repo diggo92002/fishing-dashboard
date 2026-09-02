@@ -1,0 +1,1989 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <link rel="manifest" href="manifest.json">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fishing Dashboard - 整合海象安全與活動門檻儀表板</title>
+    
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+    
+    <!-- Leaflet JS -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+
+    <style>
+        :root {
+            --bg-color: #0f172a;
+            --card-bg: #1e293b;
+            --text-color: #f8fafc;
+            --text-muted: #94a3b8;
+            --accent-blue: #38bdf8;
+            --danger-color: #ef4444;
+            --warning-color: #eab308;
+            --success-color: #22c55e;
+            --border-color: #334155;
+            --ecmwf-color: #a855f7;
+            --noaa-color: #3b82f6;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 12px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 980px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        h1 { 
+            text-align: center; 
+            color: var(--accent-blue); 
+            margin-bottom: 4px; 
+            font-size: 1.4rem;
+        }
+        
+        .subtitle { 
+            text-align: center; 
+            color: var(--text-muted); 
+            font-size: 0.82rem; 
+            margin-top: 0; 
+        }
+
+        .card { 
+            background-color: var(--card-bg); 
+            border-radius: 8px; 
+            padding: 12px 15px;
+            border: 1px solid var(--border-color); 
+        }
+        
+        .card-header-flex {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .card-title {
+            font-size: 1rem;
+            font-weight: bold;
+            color: var(--accent-blue);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            margin: 0;
+        }
+
+        .toggle-btn, .delete-btn, .add-btn {
+            padding: 4px 10px;
+            font-size: 0.8rem;
+            border-radius: 5px;
+        }
+
+        .toggle-btn {
+            background-color: #0f172a;
+            color: var(--accent-blue);
+            border: 1px solid var(--border-color);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .toggle-btn:hover {
+            border-color: var(--accent-blue);
+            background-color: rgba(56, 189, 248, 0.1);
+        }
+
+        .delete-btn {
+            background-color: rgba(239, 68, 68, 0.2);
+            color: var(--danger-color);
+            border: 1px solid var(--danger-color);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .delete-btn:hover {
+            background-color: var(--danger-color);
+            color: #fff;
+        }
+
+        .add-btn {
+            background-color: rgba(56, 189, 248, 0.2);
+            color: var(--accent-blue);
+            border: 1px solid var(--accent-blue);
+            cursor: pointer;
+            white-space: nowrap;
+        }
+
+        .add-btn:hover:not(:disabled) {
+            background-color: var(--accent-blue);
+            color: #000;
+            font-weight: bold;
+        }
+
+        .controls-container { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-top: 8px; }
+        .control-group { display: flex; align-items: center; gap: 4px; }
+
+        select, input[type="number"], input[type="text"] {
+            background-color: #0f172a;
+            color: var(--text-color);
+            border: 1px solid var(--border-color);
+            padding: 5px 8px;
+            border-radius: 5px;
+            font-size: 0.85rem;
+        }
+
+        .database-box {
+            background-color: #0f172a;
+            padding: 10px;
+            border-radius: 8px;
+            border: 1px dashed var(--accent-blue);
+            margin-bottom: 10px;
+        }
+
+        #mapContainerWrapper, #coordsInputWrapper {
+            transition: all 0.3s ease;
+        }
+
+        #fishingMap {
+            height: 360px;
+            width: 100%;
+            border-radius: 6px;
+            margin-top: 10px;
+            border: 1px solid var(--border-color);
+            z-index: 1;
+            cursor: crosshair;
+        }
+
+        .leaflet-pane, .leaflet-top, .leaflet-bottom {
+            z-index: 10 !important;
+        }
+
+        .date-selector {
+            display: flex;
+            gap: 8px;
+            overflow-x: auto;
+            padding: 4px 2px 8px;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: thin;
+        }
+
+        .date-btn {
+            flex: 0 0 100px;
+            min-width: 100px;
+            height: 56px;
+            box-sizing: border-box;
+            background-color: #0f172a;
+            border: 1px solid var(--border-color);
+            color: var(--text-color);
+            padding: 0;
+            border-radius: 8px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .date-btn:hover {
+            border-color: var(--accent-blue);
+            transform: translateY(-1px);
+        }
+
+        .date-top {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            gap: 2px;
+            padding: 4px;
+        }
+
+        .date-week { font-size: 0.8rem; font-weight: 600; line-height: 1; color: var(--text-color); }
+        .date-main { font-size: 1rem; font-weight: 700; line-height: 1.1; white-space: nowrap; color: var(--text-color); }
+
+        .date-btn.active {
+            background-color: var(--accent-blue);
+            color: #000;
+            font-weight: bold;
+            border-color: var(--accent-blue);
+        }
+
+        .date-btn.active .date-week,
+        .date-btn.active .date-main { color: #000 !important; }
+
+        .astro-info-box {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            background-color: #0f172a;
+            padding: 8px 12px;
+            border-radius: 6px;
+            border: 1px solid var(--border-color);
+            font-size: 0.85rem;
+            color: var(--accent-blue);
+            flex-wrap: wrap;
+            margin-top: 10px;
+        }
+
+        .astro-item { display: flex; align-items: center; gap: 4px; }
+
+        .tide-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #0f172a;
+            padding: 8px 12px;
+            border-radius: 8px 8px 0 0;
+            border: 1px solid var(--border-color);
+            border-bottom: none;
+            font-size: 0.85rem;
+        }
+
+        .tide-chart-container {
+            background-color: #0f172a;
+            border: 1px solid var(--border-color);
+            border-radius: 0 0 8px 8px;
+            padding: 10px;
+            position: relative;
+        }
+
+        .tide-svg {
+            width: 100%;
+            height: 110px;
+            overflow: visible;
+        }
+
+        .tide-extremes-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 8px;
+            margin-top: 10px;
+        }
+
+        @media(max-width: 768px) {
+            .tide-extremes-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+
+        .tide-extreme-card {
+            background-color: rgba(30, 41, 59, 0.7);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            padding: 6px 8px;
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .tide-extreme-header {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 0.5rem;
+            font-weight: bold;
+        }
+
+        .tide-extreme-val {
+            font-size: 0.92rem;
+            font-weight: bold;
+            color: var(--text-color);
+        }
+
+        .tide-extreme-time {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        .model-badges { display: flex; gap: 6px; margin-bottom: 10px; flex-wrap: wrap; }
+        .model-tag { font-size: 0.72rem; padding: 2px 6px; border-radius: 4px; font-weight: bold; }
+        .model-tag.ecmwf { background-color: rgba(168, 85, 247, 0.2); color: var(--ecmwf-color); border: 1px solid var(--ecmwf-color); }
+        .model-tag.wam { background-color: rgba(59, 130, 246, 0.2); color: var(--noaa-color); border: 1px solid var(--noaa-color); }
+        .model-tag.tide { background-color: rgba(34, 197, 94, 0.2); color: var(--success-color); border: 1px solid var(--success-color); }
+
+        .results-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 12px; }
+        
+        .result-box {
+            background-color: #0f172a;
+            border-radius: 8px;
+            padding: 12px;
+            border: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .status-badge {
+            display: inline-block;
+            font-size: 0.95rem;
+            font-weight: bold;
+            padding: 4px 10px;
+            border-radius: 16px;
+            margin-bottom: 8px;
+        }
+
+        .status-badge.danger { background-color: rgba(239, 68, 68, 0.2); color: var(--danger-color); }
+        .status-badge.warning { background-color: rgba(234, 179, 8, 0.2); color: var(--warning-color); }
+        .status-badge.success { background-color: rgba(34, 197, 94, 0.2); color: var(--success-color); }
+        .status-badge.info { background-color: rgba(56, 189, 248, 0.2); color: var(--accent-blue); }
+
+        .risk-metrics {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 8px;
+            font-size: 0.8rem;
+            background-color: var(--card-bg);
+            padding: 6px 10px;
+            border-radius: 6px;
+        }
+
+        .reason-list { color: var(--danger-color); font-size: 0.8rem; margin-top: 6px; padding-left: 18px; min-height: 32px; }
+
+        .boat-score-breakdown {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 4px;
+            margin-top: 8px;
+            font-size: 0.78rem;
+            background-color: var(--card-bg);
+            padding: 8px;
+            border-radius: 6px;
+        }
+
+        .breakdown-item { display: flex; justify-content: space-between; color: var(--text-muted); }
+        .breakdown-item span.score { color: var(--text-color); font-weight: bold; }
+
+        .table-container {
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            overflow-x: auto;
+            background-color: #0f172a;
+        }
+
+        .table-container.vertical { max-height: 240px; overflow-y: auto; }
+
+        table { width: 100%; border-collapse: collapse; text-align: center; font-size: 0.8rem; white-space: nowrap; }
+        th, td { padding: 6px 8px; border: 1px solid var(--border-color); }
+        th { background-color: #0f172a; color: var(--text-muted); }
+
+        .horizontal th.first-col, .horizontal td.first-col {
+            position: sticky;
+            left: 0;
+            background-color: #0f172a;
+            z-index: 2;
+            font-weight: bold;
+            color: var(--accent-blue);
+            text-align: left;
+            padding-left: 10px;
+        }
+
+        .highlight { border: 2px solid var(--accent-blue) !important; }
+
+        .wg-safe { background-color: rgba(34, 197, 94, 0.25) !important; color: #86efac; font-weight: bold; }
+        .wg-warn { background-color: rgba(234, 179, 8, 0.25) !important; color: #fde047; font-weight: bold; }
+        .wg-danger { background-color: rgba(239, 68, 68, 0.3) !important; color: #fca5a5; font-weight: bold; }
+
+        .config-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 10px;
+            margin-top: 8px;
+        }
+
+        .config-section {
+            background-color: #0f172a;
+            padding: 10px;
+            border-radius: 6px;
+            border: 1px solid var(--border-color);
+        }
+
+        .config-section-title { font-weight: bold; font-size: 0.85rem; margin-bottom: 8px; color: var(--accent-blue); }
+        .config-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; font-size: 0.8rem; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div>
+        <h1>🌊 釣點海象與活動安全評估儀表板</h1>
+        <p class="subtitle">ECMWF IFS HRES + WAM + 完整資料庫座標對應與活動模式動態評估</p>
+    </div>
+
+    <!-- 0. 釣點選擇與管理 -->
+    <div class="card">
+        <div class="card-header-flex" style="margin-bottom: 15px;">
+            <div class="card-title">📍 釣點選擇</div>
+            <div style="display: flex; gap: 8px;">
+                <button class="toggle-btn" id="toggleAddBoxBtn" onclick="toggleAddBox()">➕ 新增釣點展開</button>
+                <button class="toggle-btn" id="toggleMapBtn" onclick="toggleMapVisibility()">🗺️ 展開地圖</button>
+            </div>
+        </div>
+        <div class="controls-container" style="border-bottom: 1px solid var(--border-color); padding-bottom: 15px; margin-top: 15px;">
+            <div class="control-group">
+                <label for="locationSelect" style="font-weight: bold; color: var(--accent-blue);">★ 我的常用釣點：</label>
+                <select id="locationSelect" onchange="onLocationChange()"></select>
+            </div>
+
+            <button class="delete-btn" onclick="deleteCurrentLocation()">🗑️ 刪除此釣點</button>
+            <button class="toggle-btn" onclick="fetchSunnyFishData()">🔄 重新整理資料</button>
+            <span id="apiStatus" style="font-size: 0.85rem; color: var(--text-muted);">載入中...</span>
+        </div>
+
+        <!-- 完整資料庫新增釣點 -->
+        <div class="database-box" id="addSpotBox" style="display: none;">
+            <div style="font-weight: bold; color: var(--accent-blue); margin-bottom: 10px; font-size: 0.9rem; display: flex; justify-content: space-between; align-items: center;">
+                <span>🌐 依完整資料庫：</span>                                                     
+                <button class="toggle-btn" onclick="toggleAddBox()">✖️ 隱藏</button>
+            </div>
+            <div class="controls-container" style="margin-top: 0; border-top: 1px dashed rgba(56, 189, 248, 0.3); padding-top: 12px;">
+                <div class="control-group">
+                    <label for="macroRegionSelect">大區域：</label>
+                    <select id="macroRegionSelect" onchange="onMacroRegionChange()"></select>
+                </div>
+                <div class="control-group">
+                    <label for="subRegionSelect">海域分類：</label>
+                    <select id="subRegionSelect" onchange="onSubRegionChange()"></select>
+                </div>
+                <div class="control-group">
+                    <label for="spotSelect">釣點：</label>
+                    <select id="spotSelect"></select>
+                </div>
+                <div style="margin-left: auto;">
+                    <button class="add-btn" id="addFromDbBtn" onclick="addLocationFromDropdown()">➕ 新增至常用</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 經緯度即時檢視與微調區（含新增釣點名稱欄位） -->
+        <div id="coordsInputWrapper" style="display: none;">
+            <div class="controls-container" style="margin-top: 12px; padding-bottom: 10px; border-bottom: 1px dashed var(--border-color);">
+                <div class="control-group">
+                    <label style="font-size: 0.85rem; color: var(--text-muted);">經度 (E):</label>
+                    <input type="number" id="lonDeg" style="width: 55px;" placeholder="121">°
+                    <input type="number" id="lonMin" step="0.01" style="width: 75px;" placeholder="55.07">' E
+                </div>
+                <div class="control-group" style="margin-left: 10px;">
+                    <label style="font-size: 0.85rem; color: var(--text-muted);">緯度 (N):</label>
+                    <input type="number" id="latDeg" style="width: 55px;" placeholder="25">°
+                    <input type="number" id="latMin" step="0.01" style="width: 75px;" placeholder="06.61">' N
+                </div>
+                <div class="control-group" style="margin-left: 10px;">
+                    <label style="font-size: 0.85rem; color: var(--accent-blue); font-weight: bold;">釣點名稱:</label>
+                    <input type="text" id="customSpotName" style="width: 120px;" placeholder="請輸入釣點名稱">
+                </div>
+                <button class="add-btn" onclick="saveCurrentCoords()" style="margin-left: auto;">💾 儲存並加入常用釣點</button>
+            </div>
+        </div>
+
+        <!-- 可隱藏的地圖容器包裝 -->
+        <div id="mapContainerWrapper" style="display: none;">
+            <div style="font-weight: bold; color: var(--accent-blue); margin-bottom: 10px; font-size: 0.9rem; display: flex; justify-content: space-between; align-items: center;">
+                    <span>💡 操作提示：您可以從上方下拉選單切換海域，或直接**點擊地圖任意位置**來手動標記你要的作釣點！</span>
+                <button class="toggle-btn" onclick="toggleMapVisibility()">✖️ 隱藏</button>
+            </div>
+            
+            <div id="fishingMap"></div>
+        </div>
+    </div>
+
+    <!-- 1. 日期選擇區塊 -->
+    <div class="card">
+        <div class="card-title">📅 選擇日期</div>
+        <div style="margin-top: 15px;" class="date-selector" id="dateSelector"></div>
+        <div class="card-title" style="margin-top: 15px;">⏰ 預定出海時間</div>
+        <div class="controls-container">
+            <div class="control-group">
+                <label for="startTime">開始時間：</label>
+                <select id="startTime" onchange="updateDashboard()"></select>
+            </div>
+
+            <div class="control-group">
+                <label for="windowSize">評估窗口：</label>
+                <select id="windowSize" onchange="updateDashboard()">
+                    <option value="2">2 小時</option>
+                    <option value="4">4 小時</option>
+                    <option value="6">6 小時</option>
+                    <option value="8">8 小時</option>
+                    <option value="10">10 小時</option>
+                    <option value="12" selected>12 小時</option>
+                </select>
+            </div>
+            <div class="control-group" style="background: #0f172a; padding: 4px 10px; border-radius: 6px; border: 1px solid var(--border-color);">
+                <label for="activityMode" style="font-size: 0.85rem;"><strong>活動模式：</strong></label>
+                <select id="activityMode" onchange="updateDashboard()" style="padding: 4px 8px; font-size: 0.85rem;">
+                    <option value="sup">🏄 SUP 槳板模式 (嚴格)</option>
+                    <option value="boat">🛥️ 搭船出海 / 船釣模式</option>
+                </select>
+            </div>
+            <span id="windowDisplay" style="color: var(--accent-blue); font-weight: bold; margin-left: auto;"></span>
+        </div>
+        <div class="astro-info-box">
+            <div class="astro-item">
+                <span>☀️ 日出日落：</span>
+                <strong id="sunTimeDisplay" style="color: #38bdf8;">--:-- - --:--</strong>
+            </div>
+            <div style="color: var(--border-color);">|</div>
+            <div class="astro-item">
+                <span>🌙 月相與潮汛：</span>
+                <strong id="moonTimeDisplay" style="color: #38bdf8;">--:-- (計算中)</strong>
+            </div>
+        </div>
+    </div>
+
+    <!-- 2. 海況數據 -->
+    <div class="card">
+        <div class="model-badges">
+            <span class="model-tag ecmwf">⚡ ECMWF IFS HRES (大氣風場、氣壓與風向)</span>
+            <span class="model-tag wam">🌊 ECMWF WAM (高解析波浪與涌浪)</span>
+            <span class="model-tag tide">🌙 天文潮汐與海流動力學</span>
+
+            <div style="display: flex; gap: 5px; margin-left: auto;">
+                <button class="toggle-btn" id="toggleStepBtn" onclick="toggleTimeStep()">⏱️ 間隔：1小時</button>
+            </div>
+        </div>
+
+        <div class="table-container horizontal" id="tableContainer">
+            <table id="forecastTable"></table>
+        </div>
+    </div>
+
+    <!-- 3. 當日潮汐與流況詳情圖表 -->
+    <div class="card" style="padding: 0; background: transparent; border: none;">
+        <div class="tide-card-header">
+            <div>
+                選定時間：<b id="tideSelectedTimeDisplay" style="color: var(--accent-blue);">--:--</b> 
+                &nbsp;&nbsp;潮高：<b id="tideSelectedHeightDisplay" style="color: var(--accent-blue);">--m</b>
+            </div>
+            <div>
+                狀態：<span id="tideStatusBadge" class="status-badge info" style="font-size: 0.8rem; padding: 3px 8px; margin-bottom: 0;">--</span>
+            </div>
+        </div>
+        <div class="tide-chart-container">
+            <div style="display: flex; justify-content: space-between; font-size: 0.85rem; color: var(--text-muted); margin-bottom: 5px;">
+                <span>24小時潮位走勢圖 (虛線為目前選定時間)</span>
+                <span>單位：公尺 (m)</span>
+            </div>
+            <!-- SVG 潮位走勢圖 -->
+            <svg id="tideSvg" class="tide-svg" viewBox="0 0 800 160" preserveAspectRatio="none"></svg>
+            <div style="display: flex; justify-content: space-between; font-size: 0.8rem; color: var(--text-muted); margin-top: 5px; padding: 0 5px;">
+                <span>00</span><span>02</span><span>04</span><span>06</span><span>08</span><span>10</span><span>12</span><span>14</span><span>16</span><span>18</span><span>20</span><span>22</span><span>24</span>
+            </div>
+
+            <!-- 乾滿潮四個極值卡片詳情 -->
+            <div class="tide-extremes-grid" id="tideExtremesGrid"></div>
+        </div>
+    </div>
+
+    <!-- 4. 評估結果區 與 活動模式切換 -->
+    <div class="card">
+        <div class="card-header-flex" style="margin-bottom: 10px;">
+            <div class="card-title" id="resultCardTitle">📊 綜合評估結果</div>
+            <div style="display: flex; gap: 10px; align-items: center;">
+                <button class="toggle-btn" id="toggleConfigBoxBtn" onclick="toggleConfigBox()">⚙️ 展開設定</button>
+            </div>
+        </div>
+        <div style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 15px;" id="modeDescription">正在載入模式說明...</div>
+        
+        <div class="results-grid">
+            <!-- SUP 評估結果框 -->
+            <div class="result-box" id="supBox">
+                <div>
+                    <div style="font-weight: bold; margin-bottom: 8px;" id="supBoxTitle">🏄 SUP 出海評估 (安全優先)</div>
+                    <div id="supBadge" class="status-badge">計算中...</div>
+                    
+                    <div class="risk-metrics">
+                        <div>最大浪高: <b id="maxWave">-</b></div>
+                        <div>最大週期: <b id="maxPeriod">-</b></div>
+                        <div>最大風速: <b id="maxWind">-</b></div>
+                        <div>最大陣風: <b id="maxGust">-</b></div>
+                    </div>
+                </div>
+                <div>
+                    <div style="font-size: 0.8rem; color: var(--text-muted); margin-top: 8px;">觸發限制因素：</div>
+                    <ul id="supReasons" class="reason-list"></ul>
+                </div>
+            </div>
+
+            <!-- 船釣評估結果框 -->
+            <div class="result-box" id="boatBox">
+                <div>
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                        <span style="font-weight: bold;">🛥️ 搭船作釣評估 (魚情優先模型)</span>
+                        <span id="boatScoreText" style="font-size: 1.2rem; font-weight: bold; color: var(--accent-blue);">- 分</span>
+                    </div>
+                    <div id="boatBadge" class="status-badge">計算中...</div>
+                    <div id="boatRating" style="font-size: 0.9rem; margin-bottom: 5px;">-</div>
+                </div>
+
+                <div>
+                    <div style="font-size: 0.8rem; color: var(--text-muted); margin-top: 5px;">魚情優先加權算分明細：</div>
+                    <div class="boat-score-breakdown">
+                        <div class="breakdown-item">潮汐流溝 (35%): <span class="score" id="scoreTide">-</span></div>
+                        <div class="breakdown-item">大氣氣壓 (25%): <span class="score" id="scorePressure">-</span></div>
+                        <div class="breakdown-item">水溫與季節 (25%): <span class="score" id="scoreTemp">-</span></div>
+                        <div class="breakdown-item">風流協調 (15%): <span class="score" id="scoreWindFlow">-</span></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 釣點個別門檻設定區 -->
+        <div id="configBox" style="display: none; margin-top: 20px; border-top: 1px dashed var(--border-color); paddingTop: 15px;">
+            <div style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 12px;">
+                正在設定：<b id="configLocationName" style="color: var(--accent-blue);">-</b> 的安全與咬況評估參數（已自動對應至目前選定的活動模式）
+            </div>
+
+            <div class="config-grid">
+                <!-- SUP 設定區塊 -->
+                <div class="config-section" id="supConfigSection">
+                    <div class="config-section-title">🏄 SUP 安全警示上限門檻</div>
+                    <div class="config-row">
+                        <label>最大浪高上限 (m):</label>
+                        <input type="number" id="cfg_sup_maxWave" step="0.1" value="0.8">
+                    </div>
+                    <div class="config-row">
+                        <label>最大涌浪週期上限 (秒):</label>
+                        <input type="number" id="cfg_sup_maxPeriod" step="0.5" value="10.0">
+                    </div>
+                    <div class="config-row">
+                        <label>最大風速上限 (kt):</label>
+                        <input type="number" id="cfg_sup_maxWind" step="0.5" value="11.5">
+                    </div>
+                    <div class="config-row">
+                        <label>最大陣風上限 (kt):</label>
+                        <input type="number" id="cfg_sup_maxGust" step="0.5" value="16.5">
+                    </div>
+                    <div class="config-row">
+                        <label>最大海流上限 (kt):</label>
+                        <input type="number" id="cfg_sup_maxCurrent" step="0.1" value="0.5">
+                    </div>
+                </div>
+
+                <!-- 船釣設定區塊 -->
+                <div class="config-section" id="boatConfigSection" style="display: none;">
+                    <div class="config-section-title">🛥️ 船釣適性門檻 (流速與風浪界線)</div>
+                    <div class="config-row">
+                        <label>流速警戒界線 (kt):</label>
+                        <input type="number" id="cfg_boat_currentWarn" step="0.1" value="2.0">
+                    </div>
+                    <div class="config-row">
+                        <label>流速危險界線 (kt):</label>
+                        <input type="number" id="cfg_boat_currentDanger" step="0.1" value="3.0">
+                    </div>
+                    <div class="config-row">
+                        <label>風速警告界線 (kt):</label>
+                        <input type="number" id="cfg_boat_windWarn" step="0.5" value="13.5">
+                    </div>
+                    <div class="config-row">
+                        <label>風速危險界線 (kt):</label>
+                        <input type="number" id="cfg_boat_windDanger" step="0.5" value="19.5">
+                    </div>
+                </div>
+            </div>
+
+            <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 15px;">
+                <button class="toggle-btn" onclick="resetCurrentConfig()">🔄 恢復此釣點預設值</button>
+                <button class="add-btn" onclick="saveCurrentConfig()">💾 儲存此釣點設定</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    const SPOT_COORDINATES = {
+        "磺港瀨": { lat: 25.265, lon: 121.685 },
+        "西北瀨": { lat: 25.350, lon: 121.500 },
+        "三角瀨": { lat: 25.220, lon: 121.750 },
+        "鐵板瀨": { lat: 25.280, lon: 121.800 },
+        "雞仔瀨": { lat: 25.240, lon: 121.850 },
+        "珊瑚瀨": { lat: 25.180, lon: 121.900 },
+        "黑水溝(東)": { lat: 23.500, lon: 119.500 },
+        "大嶼東": { lat: 22.348, lon: 120.358 },
+        "基隆白燈": { lat: 25.191, lon: 121.780 },
+        "大淺礁": { lat: 25.300, lon: 121.900 },
+        "釣魚台": { lat: 25.743, lon: 123.473 },
+        "黃尾嶼": { lat: 25.925, lon: 123.683 },
+        "赤尾嶼": { lat: 25.908, lon: 124.550 },
+        "3米礁": { lat: 25.150, lon: 121.880 },
+        "10米礁": { lat: 25.160, lon: 121.890 },
+        "烏坵": { lat: 24.985, lon: 119.452 },
+        "海山北風車": { lat: 25.120, lon: 121.150 },
+        "竹圍漁港": { lat: 25.122, lon: 121.258 },
+        "海尾仔": { lat: 24.850, lon: 120.920 },
+        "基隆嶼": { lat: 25.191, lon: 121.780 },
+        "澎佳嶼": { lat: 25.629, lon: 122.079 },
+        "棉花嶼": { lat: 25.485, lon: 122.112 },
+        "花瓶嶼": { lat: 25.488, lon: 121.962 },
+        "正濱": { lat: 25.143, lon: 121.762 },
+        "八斗子": { lat: 25.145, lon: 121.798 },
+        "深澳岬角": { lat: 25.135, lon: 121.825 },
+        "紫菜坪(蝙蝠洞)": { lat: 25.128, lon: 121.888 },
+        "水湳洞": { lat: 25.122, lon: 121.865 },
+        "南雅": { lat: 25.122, lon: 121.892 },
+        "鼻頭": { lat: 25.128, lon: 121.915 },
+        "龍洞": { lat: 25.122, lon: 121.922 },
+        "和美": { lat: 25.115, lon: 121.935 },
+        "澳底": { lat: 25.075, lon: 121.915 },
+        "福隆": { lat: 25.022, lon: 121.944 },
+        "馬崗潮間帶": { lat: 25.012, lon: 122.002 },
+        "萊萊磯釣場": { lat: 25.005, lon: 122.005 },
+        "外木山": { lat: 25.172, lon: 121.718 },
+        "大武崙": { lat: 25.182, lon: 121.712 },
+        "萬里": { lat: 25.182, lon: 121.688 },
+        "龜吼": { lat: 25.190, lon: 121.682 },
+        "野柳岬": { lat: 25.205, lon: 121.692 },
+        "核二出水口": { lat: 25.202, lon: 121.658 },
+        "磺港": { lat: 25.222, lon: 121.648 },
+        "富貴角": { lat: 25.298, lon: 121.537 },
+        "玉堂海釣場(外)": { lat: 25.250, lon: 121.500 },
+        "六塊厝": { lat: 25.275, lon: 121.488 },
+        "漁人碼頭": { lat: 25.183, lon: 121.415 },
+        "台北港": { lat: 25.158, lon: 121.402 },
+        "頂竂沙灘": { lat: 25.035, lon: 121.050 },
+        "淡水沙崙": { lat: 25.185, lon: 121.425 },
+        "石門漁港": { lat: 25.292, lon: 121.562 },
+        "十八王公(核一)": { lat: 25.285, lon: 121.578 },
+        "嘉寶沙灘": { lat: 25.148, lon: 121.350 },
+        "大潭出水": { lat: 25.025, lon: 121.038 },
+        "永安漁港": { lat: 24.980, lon: 121.018 },
+        "龍鳳漁港": { lat: 24.698, lon: 120.768 },
+        "南寮漁港": { lat: 24.848, lon: 120.932 },
+        "南寮外海": { lat: 24.860, lon: 120.900 },
+        "坡頭漁港": { lat: 24.912, lon: 120.978 },
+        "海山漁港": { lat: 24.782, lon: 120.912 },
+        "外埔外海": { lat: 24.600, lon: 120.750 },
+        "白沙屯漁港": { lat: 24.572, lon: 120.708 },
+        "苑裡-外海": { lat: 24.440, lon: 120.620 },
+        "梧棲外海": { lat: 24.280, lon: 120.450 },
+        "台中港": { lat: 24.278, lon: 120.518 },
+        "線西蚵棚": { lat: 24.135, lon: 120.420 },
+        "王功漁港": { lat: 23.985, lon: 120.302 },
+        "彰濱": { lat: 24.100, lon: 120.400 },
+        "八仙筏釣": { lat: 24.050, lon: 120.350 },
+        "濁水溪口": { lat: 23.820, lon: 120.220 },
+        "五條港漁港-外海": { lat: 23.730, lon: 120.150 },
+        "三條崙漁港": { lat: 23.705, lon: 120.175 },
+        "台子港": { lat: 23.635, lon: 120.165 },
+        "箔子寮漁港": { lat: 23.585, lon: 120.152 },
+        "布袋": { lat: 23.375, lon: 120.158 },
+        "塭港漁港": { lat: 23.412, lon: 120.142 },
+        "東石漁港": { lat: 23.458, lon: 120.145 },
+        "白水湖漁港": { lat: 23.395, lon: 120.138 },
+        "布袋漁港": { lat: 23.372, lon: 120.148 },
+        "好美里漁港": { lat: 23.335, lon: 120.135 },
+        "外傘頂洲": { lat: 23.500, lon: 120.050 },
+        "馬沙溝": { lat: 23.235, lon: 120.088 },
+        "蘆竹溝": { lat: 23.255, lon: 120.102 },
+        "安平漁港": { lat: 22.998, lon: 120.158 },
+        "北門漁港": { lat: 23.272, lon: 120.118 },
+        "將軍漁港": { lat: 23.218, lon: 120.078 },
+        "七股": { lat: 23.150, lon: 120.080 },
+        "西子灣": { lat: 22.628, lon: 120.265 },
+        "旗津": { lat: 22.585, lon: 120.272 },
+        "興達港": { lat: 22.872, lon: 120.185 },
+        "鳳鼻頭港": { lat: 22.525, lon: 120.335 },
+        "中芸漁港": { lat: 22.505, lon: 120.382 },
+        "三點仔": { lat: 22.480, lon: 120.350 },
+        "蚵仔寮": { lat: 22.728, lon: 120.258 },
+        "鐵釘15海浬": { lat: 22.600, lon: 120.050 },
+        "高雄西南70浬": { lat: 22.000, lon: 119.200 },
+        "高雄西南150浬": { lat: 21.200, lon: 118.500 },
+        "永安平台": { lat: 22.820, lon: 120.200 },
+        "漯底海堤": { lat: 22.780, lon: 120.230 },
+        "赤馬窟": { lat: 22.500, lon: 120.400 },
+        "核3出水口": { lat: 21.952, lon: 120.762 },
+        "南灣": { lat: 21.958, lon: 120.758 },
+        "白砂-外海": { lat: 21.938, lon: 120.708 },
+        "萬里桐-外海": { lat: 21.995, lon: 120.715 },
+        "枋山-外海": { lat: 22.260, lon: 120.580 },
+        "墾丁外海": { lat: 21.900, lon: 120.800 },
+        "枋寮率芒溪口": { lat: 22.365, lon: 120.592 },
+        "東港(鹽埔)": { lat: 22.468, lon: 120.448 },
+        "林邊溪海口": { lat: 22.435, lon: 120.492 },
+        "佳樂水": { lat: 22.012, lon: 120.842 },
+        "九棚溪出口": { lat: 22.125, lon: 120.885 },
+        "大鵬灣南堤": { lat: 22.455, lon: 120.475 },
+        "車城海口港": { lat: 22.072, lon: 120.708 },
+        "墾丁鼻頭港": { lat: 21.915, lon: 120.835 },
+        "山海漁港": { lat: 21.972, lon: 120.725 },
+        "後壁湖魚港": { lat: 21.944, lon: 120.745 },
+        "龜山島東": { lat: 24.843, lon: 121.950 },
+        "龜山島西": { lat: 24.840, lon: 121.928 },
+        "石城": { lat: 24.972, lon: 121.925 },
+        "大溪": { lat: 24.938, lon: 121.895 },
+        "梗枋": { lat: 24.898, lon: 121.855 },
+        "烏石港": { lat: 24.868, lon: 121.832 },
+        "蘇澳": { lat: 24.588, lon: 121.862 },
+        "南澳": { lat: 24.455, lon: 121.815 },
+        "粉鳥林": { lat: 24.525, lon: 121.848 },
+        "東澳": { lat: 24.528, lon: 121.835 },
+        "石梯坪": { lat: 23.485, lon: 121.512 },
+        "崇德": { lat: 24.162, lon: 121.652 },
+        "七星潭": { lat: 24.025, lon: 121.638 },
+        "花蓮港": { lat: 23.992, lon: 121.628 },
+        "石梯": { lat: 23.478, lon: 121.508 },
+        "磯崎": { lat: 23.715, lon: 121.552 },
+        "和平港南堤": { lat: 24.315, lon: 121.758 },
+        "清水斷崖": { lat: 24.205, lon: 121.675 },
+        "富岡漁港": { lat: 22.793, lon: 121.196 },
+        "台東三仙": { lat: 23.288, lon: 121.412 },
+        "烏石鼻漁港": { lat: 23.235, lon: 121.398 },
+        "大武漁港": { lat: 22.352, lon: 120.902 },
+        "澎湖水道(黑水溝)": { lat: 23.300, lon: 119.500 },
+        "目斗嶼": { lat: 23.772, lon: 119.585 },
+        "員貝嶼": { lat: 23.645, lon: 119.645 },
+        "查某嶼": { lat: 23.612, lon: 119.678 },
+        "虎井嶼": { lat: 23.472, lon: 119.525 },
+        "姑婆嶼": { lat: 23.715, lon: 119.565 },
+        "望安潭門港": { lat: 23.365, lon: 119.498 },
+        "將軍嶼": { lat: 23.355, lon: 119.522 },
+        "東吉嶼": { lat: 23.255, lon: 119.672 },
+        "七美": { lat: 23.208, lon: 119.422 },
+        "東西嶼坪": { lat: 23.275, lon: 119.612 },
+        "南寮漁港": { lat: 22.668, lon: 121.488 },
+        "中寮漁港": { lat: 22.678, lon: 121.475 },
+        "將軍岩": { lat: 22.705, lon: 121.552 },
+        "柚子湖": { lat: 22.652, lon: 121.512 },
+        "香菇坑": { lat: 22.645, lon: 121.505 },
+        "馬蹄橋": { lat: 22.632, lon: 121.482 },
+        "東清灣": { lat: 22.045, lon: 121.565 },
+        "開元港": { lat: 22.042, lon: 121.542 },
+        "東引": { lat: 26.368, lon: 120.492 },
+        "北竿": { lat: 26.228, lon: 120.005 },
+        "南竿福澳港": { lat: 26.152, lon: 119.928 },
+        "東莒猛澳": { lat: 26.008, lon: 119.958 },
+        "西莒青帆": { lat: 25.975, lon: 119.932 },
+        "復國墩": { lat: 24.472, lon: 118.435 },
+        "小琉球": { lat: 22.345, lon: 120.368 },
+        "七星岩": { lat: 21.750, lon: 120.820 },
+        "東沙群島": { lat: 20.700, lon: 116.733 }
+    };
+
+    const windguruData = {
+        "常用瀨區": {
+            "離岸瀨區與島礁": ["磺港瀨", "西北瀨", "三角瀨", "鐵板瀨", "雞仔瀨", "珊瑚瀨", "黑水溝(東)", "大嶼東", "基隆白燈", "大淺礁", "釣魚台", "黃尾嶼", "赤尾嶼", "3米礁", "10米礁", "烏坵", "海山北風車", "竹圍漁港", "海尾仔"]
+        },
+        "台灣北部海域 (Northern Taiwan)": {
+            "澎佳嶼海面": ["基隆嶼", "澎佳嶼", "棉花嶼", "花瓶嶼"],
+            "北北基海面": ["正濱", "八斗子", "深澳岬角", "紫菜坪(蝙蝠洞)", "水湳洞", "南雅", "鼻頭", "龍洞", "和美", "澳底", "福隆", "馬崗潮間帶", "萊萊磯釣場", "外木山", "大武崙", "萬里", "龜吼", "野柳岬", "核二出水口", "磺港", "富貴角", "玉堂海釣場(外)", "六塊厝", "漁人碼頭", "台北港", "頂竂沙灘"],
+            "西北部海面": ["台北港", "淡水沙崙", "富貴角", "石門漁港", "十八王公(核一)", "嘉寶沙灘"]
+        },
+        "桃園、新竹、苗栗、台中": {
+            "桃園": ["大潭出水", "永安漁港", "竹圍漁港"],
+            "新竹": ["龍鳳漁港", "南寮漁港", "南寮外海", "坡頭漁港", "海山漁港"],
+            "苗栗": ["外埔外海", "白沙屯漁港", "苑裡-外海"],
+            "台中": ["梧棲外海", "台中港", "線西蚵棚"]
+        },
+        "彰化、雲林、嘉義、台南": {
+            "彰化": ["王功漁港", "彰濱", "八仙筏釣", "濁水溪口"],
+            "雲林": ["五條港漁港-外海", "三條崙漁港", "台子港", "箔子寮漁港"],
+            "嘉義": ["布袋", "塭港漁港", "東石漁港", "白水湖漁港", "布袋漁港", "好美里漁港", "外傘頂洲"],
+            "台南": ["馬沙溝", "蘆竹溝", "安平漁港", "北門漁港", "將軍漁港", "七股"]
+        },
+        "高雄、屏東、恆春": {
+            "高雄": ["西子灣", "旗津", "興達港", "鳳鼻頭港", "中芸漁港", "三點仔", "蚵仔寮", "鐵釘15海浬", "高雄西南70浬", "高雄西南150浬", "永安平台", "漯底海堤", "赤馬窟"],
+            "屏東": ["核3出水口", "南灣", "白砂-外海", "萬里桐-外海", "枋山-外海", "墾丁外海", "枋寮率芒溪口", "東港(鹽埔)", "林邊溪海口", "佳樂水", "九棚溪出口", "大鵬灣南堤"],
+            "恆春": ["車城海口港", "墾丁鼻頭港", "啞口港(興海漁港)", "山海漁港", "後壁湖魚港"]
+        },
+        "台灣東部海域 (Eastern Taiwan)": {
+            "宜蘭外海": ["龜山島東", "龜山島西", "石城", "大溪", "梗枋", "烏石港", "蘇澳", "南澳", "粉鳥林", "東澳"],
+            "花蓮": ["石梯坪", "崇德", "七星潭", "花蓮港", "石梯", "磯崎", "和平港南堤", "清水斷崖"],
+            "台東": ["富岡漁港", "台東三仙", "烏石鼻漁港", "大武漁港"]
+        },
+        "離島海域 (Outer Islands)": {
+            "澎湖群島": ["澎湖水道(黑水溝)", "目斗嶼", "員貝嶼", "查某嶼", "虎井嶼", "姑婆嶼", "望安潭門港", "將軍嶼", "東吉嶼", "七美", "東西嶼坪"],
+            "綠島與蘭嶼": ["南寮漁港", "中寮漁港", "將軍岩", "柚子湖", "香菇坑", "馬蹄橋", "東清灣", "開元港"],
+            "馬祖與金門": ["東引", "北竿", "南竿福澳港", "東莒猛澳", "西莒青帆", "復國墩", "烏坵"],
+            "Other Islands": ["小琉球", "七星岩", "釣魚台", "東沙群島"]
+        }
+    };
+
+    const DEFAULT_CONFIG = {
+        sup_maxWave: 0.8,
+        sup_maxPeriod: 10.0,
+        sup_maxWind: 11.5,
+        sup_maxGust: 16.5,
+        sup_maxCurrent: 0.5,
+        boat_currentWarn: 2.0,
+        boat_currentDanger: 3.0,
+        boat_windWarn: 13.5,
+        boat_windDanger: 19.5
+    };
+
+    let myLocations = {};
+    let currentLocationKey = 'longdong';
+    let selectedDateIndex = 0;
+    let isHorizontalLayout = true;
+    let timeStep = 1;
+    let currentDataByDate = [];
+    let astroDataByDate = [];
+
+    let map;
+    let currentMarker = null;
+
+    // 風速（節/kt）轉換為蒲福風級（級）
+    function knotsToBeaufort(knots) {
+        if (knots < 1) return 0;
+        if (knots <= 3) return 1;
+        if (knots <= 6) return 2;
+        if (knots <= 10) return 3;
+        if (knots <= 16) return 4;
+        if (knots <= 21) return 5;
+        if (knots <= 27) return 6;
+        if (knots <= 33) return 7;
+        if (knots <= 40) return 8;
+        if (knots <= 47) return 9;
+        if (knots <= 55) return 10;
+        if (knots <= 63) return 11;
+        return 12;
+    }
+
+    function getSpotCoords(spotName) {
+        if (SPOT_COORDINATES[spotName]) return SPOT_COORDINATES[spotName];
+        return { lat: 25.122, lon: 121.922 };
+    }
+
+    function loadMyLocations() {
+        const saved = localStorage.getItem('sunnyfish_locations_v50');
+        if (saved) {
+            try { myLocations = JSON.parse(saved); } catch (e) { myLocations = {}; }
+        }
+        
+        if (Object.keys(myLocations).length === 0) {
+            myLocations['longdong'] = { id: 'longdong', name: '📍 龍洞', lat: 25.122, lon: 121.922, config: { ...DEFAULT_CONFIG } };
+            myLocations['shenao'] = { id: 'shenao', name: '📍 深澳岬角', lat: 25.135, lon: 121.825, config: { ...DEFAULT_CONFIG } };
+        }
+
+        Object.keys(myLocations).forEach(key => {
+            if (!myLocations[key].config) {
+                myLocations[key].config = { ...DEFAULT_CONFIG };
+            }
+            if (myLocations[key].config.sup_maxPeriod === undefined) {
+                myLocations[key].config.sup_maxPeriod = DEFAULT_CONFIG.sup_maxPeriod;
+            }
+        });
+
+        if (!myLocations[currentLocationKey]) {
+            currentLocationKey = Object.keys(myLocations)[0];
+        }
+    }
+
+    function saveMyLocations() {
+        localStorage.setItem('sunnyfish_locations_v50', JSON.stringify(myLocations));
+    }
+
+    function renderLocationSelect() {
+        const select = document.getElementById('locationSelect');
+        select.innerHTML = '';
+        Object.keys(myLocations).forEach(key => {
+            const loc = myLocations[key];
+            const opt = document.createElement('option');
+            opt.value = key;
+            opt.textContent = loc.name;
+            select.appendChild(opt);
+        });
+        select.value = currentLocationKey;
+    }
+
+    function initMap() {
+        const loc = myLocations[currentLocationKey] || { lat: 25.122, lon: 121.922 };
+        map = L.map('fishingMap').setView([loc.lat, loc.lon], 12);
+
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 18,
+            attribution: '© OpenStreetMap contributors'
+        }).addTo(map);
+
+        map.on('click', (e) => {
+            const lat = e.latlng.lat;
+            const lon = e.latlng.lng;
+
+            const latDM = decimalToDegMin(lat);
+            const lonDM = decimalToDegMin(lon);
+
+            document.getElementById('latDeg').value = latDM.deg;
+            document.getElementById('latMin').value = latDM.min;
+            document.getElementById('lonDeg').value = lonDM.deg;
+            document.getElementById('lonMin').value = lonDM.min;
+
+            if (currentMarker) {
+                currentMarker.setLatLng([lat, lon]);
+            } else {
+                currentMarker = L.marker([lat, lon]).addTo(map);
+            }
+            map.setView([lat, lon]);
+        });
+
+        updateMapMarker();
+    }
+
+    function updateMapMarker() {
+        if (!map) return;
+        const loc = myLocations[currentLocationKey];
+        if (!loc) return;
+
+        if (currentMarker) {
+            map.removeLayer(currentMarker);
+        }
+
+        currentMarker = L.marker([loc.lat, loc.lon], { draggable: true }).addTo(map);
+        
+        currentMarker.on('dragend', (event) => {
+            const marker = event.target;
+            const position = marker.getLatLng();
+            const latDM = decimalToDegMin(position.lat);
+            const lonDM = decimalToDegMin(position.lng);
+
+            document.getElementById('latDeg').value = latDM.deg;
+            document.getElementById('latMin').value = latDM.min;
+            document.getElementById('lonDeg').value = lonDM.deg;
+            document.getElementById('lonMin').value = lonDM.min;
+        });
+
+        currentMarker.bindPopup(`<b>${loc.name}</b><br>緯: ${loc.lat.toFixed(4)} | 經: ${loc.lon.toFixed(4)}<br><i>提示：點擊地圖其他地方可直接移動標記</i>`).openPopup();
+        map.setView([loc.lat, loc.lon], 13);
+    }
+
+    function toggleMapVisibility() {
+        const mapWrapper = document.getElementById('mapContainerWrapper');
+        const coordsWrapper = document.getElementById('coordsInputWrapper');
+        const toggleMapBtn = document.getElementById('toggleMapBtn');
+        
+        if (mapWrapper.style.display === 'none') {
+            mapWrapper.style.display = 'block';
+            coordsWrapper.style.display = 'block';
+            toggleMapBtn.textContent = '🗺️ 隱藏地圖';
+            if (map) {
+                setTimeout(() => { map.invalidateSize(); }, 100);
+            }
+        } else {
+            mapWrapper.style.display = 'none';
+            coordsWrapper.style.display = 'none';
+            toggleMapBtn.textContent = '🗺️ 展開地圖';
+        }
+    }
+
+    function toggleAddBox() {
+        const addBox = document.getElementById('addSpotBox');
+        const toggleBtn = document.getElementById('toggleAddBoxBtn');
+        if (addBox.style.display === 'none') {
+            addBox.style.display = 'block';
+            toggleBtn.textContent = '✖️ 新增釣點隱藏';
+        } else {
+            addBox.style.display = 'none';
+            toggleBtn.textContent = '➕ 新增釣點展開';
+        }
+    }
+
+    function toggleConfigBox() {
+        const configBox = document.getElementById('configBox');
+        const toggleBtn = document.getElementById('toggleConfigBoxBtn');
+        if (configBox.style.display === 'none') {
+            configBox.style.display = 'block';
+            toggleBtn.textContent = '✖️ 隱藏設定';
+        } else {
+            configBox.style.display = 'none';
+            toggleBtn.textContent = '⚙️ 展開設定';
+        }
+    }
+
+    function initMacroRegions() {
+        const macroSelect = document.getElementById('macroRegionSelect');
+        macroSelect.innerHTML = '';
+        Object.keys(windguruData).forEach(macro => {
+            let opt = document.createElement('option');
+            opt.value = macro;
+            opt.textContent = macro;
+            macroSelect.appendChild(opt);
+        });
+        onMacroRegionChange();
+    }
+
+    function onMacroRegionChange() {
+        const macroSelect = document.getElementById('macroRegionSelect');
+        const subSelect = document.getElementById('subRegionSelect');
+        let selectedMacro = macroSelect.value;
+        let subRegions = windguruData[selectedMacro] || {};
+
+        subSelect.innerHTML = '';
+        Object.keys(subRegions).forEach(sub => {
+            let opt = document.createElement('option');
+            opt.value = sub;
+            opt.textContent = sub;
+            subSelect.appendChild(opt);
+        });
+        onSubRegionChange();
+    }
+
+    function onSubRegionChange() {
+        const macroSelect = document.getElementById('macroRegionSelect');
+        const subSelect = document.getElementById('subRegionSelect');
+        const spotSelect = document.getElementById('spotSelect');
+        const addBtn = document.getElementById('addFromDbBtn');
+
+        let selectedMacro = macroSelect.value;
+        let selectedSub = subSelect.value;
+        let spots = (windguruData[selectedMacro] && windguruData[selectedMacro][selectedSub]) || [];
+
+        spotSelect.innerHTML = '';
+        const addedSpotNames = Object.values(myLocations).map(l => l.name.replace('📍 ', ''));
+        const availableSpots = spots.filter(spot => !addedSpotNames.includes(spot));
+
+        if (availableSpots.length === 0) {
+            let opt = document.createElement('option');
+            opt.textContent = '✨ 此分類釣點均已新增';
+            opt.value = '';
+            spotSelect.appendChild(opt);
+            spotSelect.disabled = true;
+            addBtn.disabled = true;
+        } else {
+            spotSelect.disabled = false;
+            addBtn.disabled = false;
+            availableSpots.forEach(spot => {
+                let opt = document.createElement('option');
+                opt.value = spot;
+                opt.textContent = `📍 ${spot}`;
+                spotSelect.appendChild(opt);
+            });
+        }
+    }
+
+    function addLocationFromDropdown() {
+        const spotSelect = document.getElementById('spotSelect');
+        const spotName = spotSelect.value;
+        if (!spotName) return;
+
+        const spotId = `spot_${Date.now()}`;
+        const coords = getSpotCoords(spotName);
+
+        myLocations[spotId] = {
+            id: spotId,
+            name: `📍 ${spotName}`,
+            lat: coords.lat,
+            lon: coords.lon,
+            config: { ...DEFAULT_CONFIG }
+        };
+
+        currentLocationKey = spotId;
+        saveMyLocations();
+        renderLocationSelect();
+        updateMapMarker();
+        onSubRegionChange();
+        loadConfigToUI();
+        fetchSunnyFishData();
+    }
+
+    function deleteCurrentLocation() {
+        if (Object.keys(myLocations).length <= 1) {
+            alert('請至少保留一個常用釣點！');
+            return;
+        }
+        if (confirm(`確定要刪除此釣點嗎？`)) {
+            delete myLocations[currentLocationKey];
+            currentLocationKey = Object.keys(myLocations)[0];
+            saveMyLocations();
+            renderLocationSelect();
+            updateMapMarker();
+            onSubRegionChange();
+            loadConfigToUI();
+            fetchSunnyFishData();
+        }
+    }
+
+    function onLocationChange() {
+        currentLocationKey = document.getElementById('locationSelect').value;
+        loadConfigToUI();
+        updateMapMarker();
+        fetchSunnyFishData();
+    }
+
+    function decimalToDegMin(decimalVal) {
+        const deg = Math.floor(decimalVal);
+        const min = ((decimalVal - deg) * 60).toFixed(2);
+        return { deg, min };
+    }
+
+    function degMinToDecimal(deg, min) {
+        return parseFloat(deg) + (parseFloat(min) / 60);
+    }
+
+    function loadConfigToUI() {
+        const loc = myLocations[currentLocationKey];
+        if (!loc) return;
+
+        const latDM = decimalToDegMin(loc.lat);
+        const lonDM = decimalToDegMin(loc.lon);
+
+        document.getElementById('latDeg').value = latDM.deg;
+        document.getElementById('latMin').value = latDM.min;
+        document.getElementById('lonDeg').value = lonDM.deg;
+        document.getElementById('lonMin').value = lonDM.min;
+        
+        document.getElementById('customSpotName').value = loc.name.replace('📍 ', '');
+
+        document.getElementById('configLocationName').textContent = loc.name;
+        document.getElementById('cfg_sup_maxWave').value = loc.config?.sup_maxWave ?? DEFAULT_CONFIG.sup_maxWave;
+        document.getElementById('cfg_sup_maxPeriod').value = loc.config?.sup_maxPeriod ?? DEFAULT_CONFIG.sup_maxPeriod;
+        document.getElementById('cfg_sup_maxWind').value = loc.config?.sup_maxWind ?? DEFAULT_CONFIG.sup_maxWind;
+        document.getElementById('cfg_sup_maxGust').value = loc.config?.sup_maxGust ?? DEFAULT_CONFIG.sup_maxGust;
+        document.getElementById('cfg_sup_maxCurrent').value = loc.config?.sup_maxCurrent ?? DEFAULT_CONFIG.sup_maxCurrent;
+        document.getElementById('cfg_boat_currentWarn').value = loc.config?.boat_currentWarn ?? DEFAULT_CONFIG.boat_currentWarn;
+        document.getElementById('cfg_boat_currentDanger').value = loc.config?.boat_currentDanger ?? DEFAULT_CONFIG.boat_currentDanger;
+        document.getElementById('cfg_boat_windWarn').value = loc.config?.boat_windWarn ?? DEFAULT_CONFIG.boat_windWarn;
+        document.getElementById('cfg_boat_windDanger').value = loc.config?.boat_windDanger ?? DEFAULT_CONFIG.boat_windDanger;
+        
+        updateConfigViewMode();
+    }
+
+    function updateConfigViewMode() {
+        const modeKey = document.getElementById('activityMode').value;
+        const supSec = document.getElementById('supConfigSection');
+        const boatSec = document.getElementById('boatConfigSection');
+        if (supSec && boatSec) {
+            if (modeKey === 'sup') {
+                supSec.style.display = 'block';
+                boatSec.style.display = 'none';
+            } else {
+                supSec.style.display = 'none';
+                boatSec.style.display = 'block';
+            }
+        }
+    }
+
+    function saveCurrentCoords() {
+        const latDeg = parseFloat(document.getElementById('latDeg').value) || 0;
+        const latMin = parseFloat(document.getElementById('latMin').value) || 0;
+        const lonDeg = parseFloat(document.getElementById('lonDeg').value) || 0;
+        const lonMin = parseFloat(document.getElementById('lonMin').value) || 0;
+        const nameInput = document.getElementById('customSpotName').value.trim();
+
+        const lat = latDeg + (latMin / 60);
+        const lon = lonDeg + (lonMin / 60);
+
+        if (lat <= 0 || lon <= 0) {
+            alert("請輸入有效的經緯度！");
+            return;
+        }
+
+        const loc = myLocations[currentLocationKey];
+        if (!loc) return;
+
+        const newName = nameInput ? (nameInput.startsWith('📍 ') ? nameInput : `📍 ${nameInput}`) : loc.name;
+
+        myLocations[currentLocationKey] = {
+            ...loc,
+            name: newName,
+            lat: parseFloat(lat.toFixed(4)),
+            lon: parseFloat(lon.toFixed(4))
+        };
+
+        saveMyLocations();
+        renderLocationSelect();
+        
+        document.getElementById('locationSelect').value = currentLocationKey;
+
+        loadConfigToUI();
+        updateMapMarker();
+        fetchSunnyFishData();
+
+        alert(`已成功覆蓋更新常用釣點：${newName.replace('📍 ', '')}`);
+    }
+
+    function saveCurrentConfig() {
+        const loc = myLocations[currentLocationKey];
+        if (!loc) return;
+        loc.config = {
+            sup_maxWave: parseFloat(document.getElementById('cfg_sup_maxWave').value) || DEFAULT_CONFIG.sup_maxWave,
+            sup_maxPeriod: parseFloat(document.getElementById('cfg_sup_maxPeriod').value) || DEFAULT_CONFIG.sup_maxPeriod,
+            sup_maxWind: parseFloat(document.getElementById('cfg_sup_maxWind').value) || DEFAULT_CONFIG.sup_maxWind,
+            sup_maxGust: parseFloat(document.getElementById('cfg_sup_maxGust').value) || DEFAULT_CONFIG.sup_maxGust,
+            sup_maxCurrent: parseFloat(document.getElementById('cfg_sup_maxCurrent').value) || DEFAULT_CONFIG.sup_maxCurrent,
+            boat_currentWarn: parseFloat(document.getElementById('cfg_boat_currentWarn').value) || DEFAULT_CONFIG.boat_currentWarn,
+            boat_currentDanger: parseFloat(document.getElementById('cfg_boat_currentDanger').value) || DEFAULT_CONFIG.boat_currentDanger,
+            boat_windWarn: parseFloat(document.getElementById('cfg_boat_windWarn').value) || DEFAULT_CONFIG.boat_windWarn,
+            boat_windDanger: parseFloat(document.getElementById('cfg_boat_windDanger').value) || DEFAULT_CONFIG.boat_windDanger,
+        };
+        saveMyLocations();
+        updateDashboard();
+        alert(`✅ 已儲存 ${loc.name} 的專屬評估門檻！`);
+    }
+
+    function resetCurrentConfig() {
+        const loc = myLocations[currentLocationKey];
+        if (!loc) return;
+        loc.config = { ...DEFAULT_CONFIG };
+        saveMyLocations();
+        loadConfigToUI();
+        updateDashboard();
+        alert(`🔄 已恢復預設值！`);
+    }
+
+    function getLunarDetails(dateObj) {
+        try {
+            const formatter = new Intl.DateTimeFormat('zh-TW-u-ca-chinese', { day: 'numeric', month: 'numeric' });
+            const parts = formatter.formatToParts(dateObj);
+            let lunarDay = 1;
+            let lunarMonth = 1;
+            for (let p of parts) {
+                if (p.type === 'day') lunarDay = parseInt(p.value, 10) || 1;
+                if (p.type === 'month') {
+                    const mMatch = p.value.match(/\d+/);
+                    if (mMatch) lunarMonth = parseInt(mMatch[0], 10);
+                }
+            }
+            
+            let tideName = '中潮';
+            let moonIcon = '🌔';
+
+            if (lunarDay === 1 || lunarDay === 15 || lunarDay === 16) {
+                tideName = lunarDay === 1 ? '大潮 (初一)' : '大潮 (十五大潮汛)';
+                moonIcon = lunarDay === 1 ? '🌑' : '🌕';
+            } else if ((lunarDay >= 2 && lunarDay <= 4) || (lunarDay >= 17 && lunarDay <= 19)) {
+                tideName = '中潮帶動';
+                moonIcon = '🌒';
+            } else {
+                tideName = '小潮';
+                moonIcon = '🌗';
+            }
+
+            return { lunarMonth, lunarDay, isSpringTide: (lunarDay === 1 || lunarDay === 15 || lunarDay === 16), tideName, moonIcon };
+        } catch (e) {
+            return { lunarMonth: 1, lunarDay: 1, isSpringTide: true, tideName: '大潮汛', moonIcon: '🌕' };
+        }
+    }
+
+    function getWeatherIcon(code, hour, apiIsDay = null) {
+        const isDay = apiIsDay !== null ? Number(apiIsDay) === 1 : (hour >= 6 && hour < 18);
+        if (code === 0) return isDay ? '☀️' : '🌙';          
+        if (code === 1) return isDay ? '🌤️' : '🌙';         
+        if (code === 2) return '⛅';                         
+        if (code === 3) return '☁️';                        
+        if ([45, 48].includes(code)) return '🌫️';          
+        if ([51, 53, 55].includes(code)) return '🌦️';      
+        if ([61, 63, 65].includes(code)) return '🌧️';      
+        if ([80, 81, 82].includes(code)) return '🌦️';      
+        if ([95].includes(code)) return '⛈️';               
+        return isDay ? '☀️' : '🌙';
+    }
+
+    function getWindDirectionText(deg) {
+        if (deg === undefined || deg === null) return '未知';
+        const directions = ['北', '北北東', '東北', '東北東', '東', '東南東', '東南', '南南東', '南', '南南西', '西南', '西南西', '西', '西北西', '西北', '北北西'];
+        const index = Math.round((deg % 360) / 22.5);
+        return directions[index % 16] + '風';
+    }
+
+    const weekDays = ['(日)', '(一)', '(二)', '(三)', '(四)', '(五)', '(六)'];
+    const dates = [];
+    const today = new Date();
+
+    for (let i = 0; i < 7; i++) {
+        const d = new Date(today);
+        d.setDate(today.getDate() + i);
+        const lunarInfo = getLunarDetails(d);
+        
+        const distTo1 = Math.min(Math.abs(lunarInfo.lunarDay - 1), Math.abs(lunarInfo.lunarDay - 30));
+        const distTo15 = Math.abs(lunarInfo.lunarDay - 15);
+        let lunarLabel = '';
+        if ((distTo1 <= 3) || (distTo15 <= 3)) {
+            const dayNames = {
+                1: '初一', 2: '初二', 3: '初三', 4: '初四', 5: '初五', 6: '初六', 7: '初七', 8: '初八', 9: '初九', 10: '初十',
+                11: '十一', 12: '十二', 13: '十三', 14: '十四', 15: '十五', 16: '十六', 17: '十七', 18: '十八', 19: '十九', 20: '二十',
+                21: '廿一', 22: '廿二', 23: '廿三', 24: '廿四', 25: '廿五', 26: '廿六', 27: '廿七', 28: '廿八', 29: '廿九', 30: '三十'
+            };
+            lunarLabel = dayNames[lunarInfo.lunarDay] || `初${lunarInfo.lunarDay}`;
+        }
+
+        dates.push({
+            display: `${d.getMonth() + 1}/${d.getDate()}`,
+            fullDate: `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`,
+            weekDay: weekDays[d.getDay()],
+            moonIcon: lunarInfo.moonIcon,
+            tideName: lunarInfo.tideName,
+            isSpringTide: lunarInfo.isSpringTide,
+            lunarLabel: lunarLabel
+        });
+    }
+
+    async function fetchSunnyFishData() {
+        const statusEl = document.getElementById('apiStatus');
+        const loc = myLocations[currentLocationKey];
+        if (!loc) return;
+
+        statusEl.textContent = `⚡ 正在調用 ECMWF 預報引擎 (${loc.name})...`;
+        statusEl.style.color = 'var(--accent-blue)';
+
+        const weatherUrl = `https://api.open-meteo.com/v1/forecast?latitude=${loc.lat}&longitude=${loc.lon}&hourly=wind_speed_10m,wind_gusts_10m,wind_direction_10m,temperature_2m,surface_pressure,cloud_cover,precipitation,weather_code,is_day&daily=sunrise,sunset,moonrise,moonset&models=ecmwf_ifs&timezone=Asia%2FTaipei&wind_speed_unit=kn`;
+        const waveUrl = `https://marine-api.open-meteo.com/v1/marine?latitude=${loc.lat}&longitude=${loc.lon}&hourly=wave_height,wave_period&models=ecmwf_wam&timezone=Asia%2FTaipei&cell_selection=sea`;
+        const currentUrl = `https://marine-api.open-meteo.com/v1/marine?latitude=${loc.lat}&longitude=${loc.lon}&hourly=ocean_current_velocity&models=meteofrance_currents&timezone=Asia%2FTaipei&cell_selection=sea`;
+
+        try {
+            const [weatherResRaw, waveResRaw, currentResRaw] = await Promise.all([
+                fetch(weatherUrl), fetch(waveUrl), fetch(currentUrl)
+            ]);
+
+            async function readApiResponse(res, label) {
+                const data = await res.json().catch(() => null);
+                if (!res.ok) {
+                    const reason = data?.reason || `${res.status} ${res.statusText}`;
+                    throw new Error(`${label} API ${res.status}: ${reason}`);
+                }
+                return data;
+            }
+
+            const [weatherRes, waveRes, currentRes] = await Promise.all([
+                readApiResponse(weatherResRaw, 'ECMWF IFS'),
+                readApiResponse(waveResRaw, 'ECMWF WAM'),
+                readApiResponse(currentResRaw, 'Ocean Current')
+            ]);
+
+            if (weatherRes?.hourly && waveRes?.hourly && currentRes?.hourly) {
+                statusEl.textContent = `✅ ECMWF IFS + WAM + 海流與氣壓數據同步完成`;
+                statusEl.style.color = 'var(--success-color)';
+                if (weatherRes.daily) processAstroData(weatherRes.daily);
+                processModelData(weatherRes.hourly, waveRes.hourly, currentRes.hourly);
+            } else {
+                throw new Error('模型回傳資料結構不完整');
+            }
+        } catch (err) {
+            console.error('fetchSunnyFishData:', err);
+            statusEl.textContent = '⚠️ API 讀取失敗，已切換至離線模擬運算';
+            statusEl.style.color = 'var(--warning-color)';
+            generateFallbackData();
+        }
+    }
+
+    function formatTimeStr(isoString) {
+        if (!isoString) return '--:--';
+        return isoString.split('T')[1].substring(0, 5);
+    }
+
+    function processAstroData(daily) {
+        astroDataByDate = dates.map((d, idx) => ({
+            sunrise: formatTimeStr(daily.sunrise[idx]),
+            sunset: formatTimeStr(daily.sunset[idx]),
+            moonrise: formatTimeStr(daily.moonrise[idx]),
+            moonset: formatTimeStr(daily.moonset[idx])
+        }));
+    }
+
+    function processModelData(weather, waveMarine, currentMarine) {
+        const MS_TO_KNOTS = 1.94384; 
+
+        currentDataByDate = dates.map((d) => {
+            const dayData = [];
+            for (let h = 0; h < 24; h++) {
+                const targetTimeString = `${d.fullDate}T${String(h).padStart(2, '0')}:00`;
+                const wIdx = weather.time.findIndex(t => t.startsWith(targetTimeString));
+                const waveIdx = waveMarine ? waveMarine.time.findIndex(t => t.startsWith(targetTimeString)) : -1;
+                const currentIdx = currentMarine ? currentMarine.time.findIndex(t => t.startsWith(targetTimeString)) : -1;
+
+                const windSpeed = (wIdx !== -1 && weather.wind_speed_10m[wIdx] !== null) ? weather.wind_speed_10m[wIdx] : 5.0;
+                const windGust = (wIdx !== -1 && weather.wind_gusts_10m[wIdx] !== null) ? weather.wind_gusts_10m[wIdx] : 8.0;
+                const windDirDeg = (wIdx !== -1 && weather.wind_direction_10m && weather.wind_direction_10m[wIdx] !== null) ? weather.wind_direction_10m[wIdx] : 45;
+                const windDirText = getWindDirectionText(windDirDeg);
+
+                const weatherCode = (wIdx !== -1 && weather.weather_code[wIdx] !== null) ? weather.weather_code[wIdx] : 0;
+                const apiIsDay = (wIdx !== -1 && weather.is_day && weather.is_day[wIdx] !== null) ? weather.is_day[wIdx] : null;
+                
+                const temp = (wIdx !== -1 && weather.temperature_2m[wIdx] !== null) ? weather.temperature_2m[wIdx] : 27.0;
+                const pressure = (wIdx !== -1 && weather.surface_pressure && weather.surface_pressure[wIdx] !== null) ? weather.surface_pressure[wIdx] : 1013.25;
+                const cloudTotal = (wIdx !== -1 && weather.cloud_cover[wIdx] !== null) ? weather.cloud_cover[wIdx] : 40;
+                const precip = (wIdx !== -1 && weather.precipitation[wIdx] !== null) ? weather.precipitation[wIdx] : 0.0;
+
+                const waveHeight = (waveIdx !== -1 && waveMarine.wave_height[waveIdx] !== null) ? waveMarine.wave_height[waveIdx] : 1.0;
+                const wavePeriod = (waveIdx !== -1 && waveMarine.wave_period[waveIdx] !== null) ? waveMarine.wave_period[waveIdx] : 7.5;
+                const oceanCurrent = (currentIdx !== -1 && currentMarine.ocean_current_velocity[currentIdx] !== null) ? (currentMarine.ocean_current_velocity[currentIdx] * MS_TO_KNOTS) : 1.2;
+
+                const tideHeight = parseFloat((Math.sin((h / 24) * Math.PI * 2 - 1) * 0.8 + (d.isSpringTide ? 0.2 : 0.0)).toFixed(2));
+
+                let fishIndex = '⭐';
+                if (d.isSpringTide && pressure >= 1010 && pressure <= 1025 && windSpeed < 12 && (h >= 18 || h <= 5)) {
+                    fishIndex = '🔥🔥🔥 ';
+                } else if (d.isSpringTide && windSpeed < 14) {
+                    fishIndex = '🔥🔥';
+                } else if (windSpeed < 15) {
+                    fishIndex = '⭐⭐⭐';
+                } else {
+                    fishIndex = '⚠️';
+                }
+
+                dayData.push({
+                    time: `${String(h).padStart(2, '0')}:00`,
+                    hour: h,
+                    weather: getWeatherIcon(weatherCode, h, apiIsDay),
+                    weatherCode: weatherCode,
+                    wave: parseFloat(waveHeight.toFixed(1)),
+                    wind: parseFloat(windSpeed.toFixed(1)),
+                    gust: parseFloat(windGust.toFixed(1)),
+                    windBeaufort: knotsToBeaufort(windSpeed),
+                    gustBeaufort: knotsToBeaufort(windGust),
+                    windDir: windDirText,
+                    current: parseFloat(oceanCurrent.toFixed(1)),
+                    period: parseFloat(wavePeriod.toFixed(1)),
+                    temp: Math.round(temp),
+                    pressure: Math.round(pressure),
+                    cloud: Math.round(cloudTotal),
+                    precip: precip > 0.1 ? precip.toFixed(1) : '0',
+                    fishIndex: fishIndex,
+                    tideHeight: tideHeight
+                });
+            }
+            return dayData;
+        });
+
+        updateDashboard();
+    }
+
+    function generateFallbackData() {
+        astroDataByDate = dates.map(() => ({
+            sunrise: '05:40', sunset: '18:20', moonrise: '17:30', moonset: '04:30'
+        }));
+
+        currentDataByDate = dates.map((d) => {
+            const data = [];
+            for (let i = 0; i < 24; i++) {
+                const tideHeight = parseFloat((Math.sin((i / 24) * Math.PI * 2 - 1) * 0.8).toFixed(2));
+                const windVal = 9.5;
+                const gustVal = 13.0;
+                data.push({
+                    time: `${String(i).padStart(2, '0')}:00`,
+                    hour: i,
+                    weather: getWeatherIcon(0, i, (i >= 6 && i < 18) ? 1 : 0),
+                    wave: 1.1,
+                    wind: windVal,
+                    gust: gustVal,
+                    windBeaufort: knotsToBeaufort(windVal),
+                    gustBeaufort: knotsToBeaufort(gustVal),
+                    windDir: '東北風',
+                    current: 1.4,
+                    period: 8.5,
+                    temp: 28,
+                    pressure: 1016,
+                    cloud: 50,
+                    precip: '0',
+                    fishIndex: d.isSpringTide ? '🔥🔥🔥' : '⭐⭐⭐',
+                    tideHeight: tideHeight
+                });
+            }
+            return data;
+        });
+        updateDashboard();
+    }
+
+    function init() {
+        loadMyLocations();
+        renderLocationSelect();
+        initMacroRegions();
+        loadConfigToUI();
+        initMap();
+
+        const dateSelector = document.getElementById('dateSelector');
+        dateSelector.innerHTML = '';
+        dates.forEach((d, idx) => {
+            const btn = document.createElement('button');
+            btn.className = `date-btn ${idx === 0 ? 'active' : ''}`;
+            btn.onclick = () => selectDate(idx);
+            
+            let lunarHtml = d.lunarLabel ? `<span style="font-size: 0.72rem; color: var(--accent-blue); font-weight: 500; margin-top: 2px;">${d.lunarLabel}</span>` : '';
+
+            btn.innerHTML = `
+                <div class="date-top">
+                    <span class="date-week">週${d.weekDay.replace(/[()]/g, '')}</span>
+                    <span class="date-main">${d.display}</span>
+                    ${lunarHtml}
+                </div>
+            `;
+            dateSelector.appendChild(btn);
+        });
+
+        populateTimeSelect();
+        fetchSunnyFishData();
+    }
+
+    function populateTimeSelect() {
+        const timeSelect = document.getElementById('startTime');
+        const currentVal = parseInt(timeSelect.value) || 6;
+        timeSelect.innerHTML = '';
+        for (let i = 0; i < 24; i += timeStep) {
+            const opt = document.createElement('option');
+            opt.value = i;
+            opt.textContent = `${String(i).padStart(2, '0')}:00`;
+            timeSelect.appendChild(opt);
+        }
+        timeSelect.value = currentVal < 24 ? currentVal : 0;
+    }
+
+    function selectDate(index) {
+        selectedDateIndex = index;
+        document.querySelectorAll('.date-btn').forEach((btn, idx) => btn.classList.toggle('active', idx === index));
+        updateDashboard();
+    }
+
+    function toggleTimeStep() {
+        timeStep = timeStep === 1 ? 2 : (timeStep === 2 ? 3 : 1);
+        document.getElementById('toggleStepBtn').textContent = `⏱️ 間隔：${timeStep}小時`;
+        populateTimeSelect();
+        updateDashboard();
+    }
+
+    function getParameterLevelClass(key, val, modeKey, cfg) {
+        if (typeof val !== 'number') return '';
+
+        if (modeKey === 'sup') {
+            if (key === 'wind') {
+                if (val >= cfg.sup_maxWind) return 'wg-danger';
+                if (val >= cfg.sup_maxWind * 0.75) return 'wg-warn';
+                return 'wg-safe';
+            }
+            if (key === 'gust') {
+                if (val >= cfg.sup_maxGust) return 'wg-danger';
+                if (val >= cfg.sup_maxGust * 0.75) return 'wg-warn';
+                return 'wg-safe';
+            }
+            if (key === 'wave') {
+                if (val >= cfg.sup_maxWave) return 'wg-danger';
+                if (val >= cfg.sup_maxWave * 0.75) return 'wg-warn';
+                return 'wg-safe';
+            }
+            if (key === 'period') {
+                if (val > cfg.sup_maxPeriod) return 'wg-danger';
+                if (val > cfg.sup_maxPeriod - 2) return 'wg-warn';
+                return 'wg-safe';
+            }
+            if (key === 'current') {
+                if (val >= cfg.sup_maxCurrent) return 'wg-danger';
+                if (val >= cfg.sup_maxCurrent * 0.7) return 'wg-warn';
+                return 'wg-safe';
+            }
+        } else {
+            if (key === 'wind') {
+                if (val >= cfg.boat_windDanger) return 'wg-danger';
+                if (val >= cfg.boat_windWarn) return 'wg-warn';
+                return 'wg-safe';
+            }
+            if (key === 'gust') {
+                if (val >= 22.0) return 'wg-danger';
+                if (val >= 16.0) return 'wg-warn';
+                return 'wg-safe';
+            }
+            if (key === 'wave') {
+                if (val >= 1.5) return 'wg-danger';
+                if (val >= 1.0) return 'wg-warn';
+                return 'wg-safe';
+            }
+            if (key === 'period') {
+                if (val > 12.0) return 'wg-danger';
+                if (val > 10.0) return 'wg-warn';
+                return 'wg-safe';
+            }
+            if (key === 'current') {
+                if (val >= cfg.boat_currentDanger) return 'wg-danger';
+                if (val >= cfg.boat_currentWarn) return 'wg-warn';
+                return 'wg-safe';
+            }
+        }
+
+        return '';
+    }
+
+    function calculateBoatScore(windowData, cfg, isSpringTide) {
+        if (!windowData || !windowData.length) return { totalScore: 0, status: { text: '-', styleClass: '', rating: '-' }, details: {} };
+
+        const avgCurrent = windowData.reduce((acc, d) => acc + d.current, 0) / windowData.length;
+        const avgPressure = windowData.reduce((acc, d) => acc + d.pressure, 0) / windowData.length;
+        const avgTemp = windowData.reduce((acc, d) => acc + d.temp, 0) / windowData.length;
+        const avgWind = windowData.reduce((acc, d) => acc + d.wind, 0) / windowData.length;
+
+        let tideScore = isSpringTide ? 95 : 70;
+        if (avgCurrent > cfg.boat_currentDanger) {
+            tideScore *= 0.3;
+        } else if (avgCurrent > cfg.boat_currentWarn) {
+            tideScore *= 0.7;
+        }
+
+        let pressureScore = 85;
+        if (avgPressure >= 1010 && avgPressure <= 1025) {
+            pressureScore = 95;
+        } else if (avgPressure < 1005 || avgPressure > 1030) {
+            pressureScore = 50;
+        }
+
+        let tempScore = (avgTemp >= 18 && avgTemp <= 28) ? 90 : 60;
+        let windFlowScore = (avgWind < cfg.boat_windWarn) ? 90 : (avgWind > cfg.boat_windDanger ? 30 : 60);
+
+        const totalScore = Math.round(
+            (tideScore * 0.35) +
+            (pressureScore * 0.25) +
+            (tempScore * 0.25) +
+            (windFlowScore * 0.15)
+        );
+
+        let status = {};
+        if (totalScore >= 85) {
+            status = { text: '🔥 魚情大好 (爆咬黃金窗)', styleClass: 'success', rating: '🔥🔥🔥🔥🔥 (極佳出海時段)' };
+        } else if (totalScore >= 70) {
+            status = { text: '🎣 咬況良好 (適合出海)', styleClass: 'info', rating: '⭐⭐⭐⭐ (穩定好釣)' };
+        } else if (totalScore >= 55) {
+            status = { text: '⚠️ 咬況平平 (魚訊較少)', styleClass: 'warning', rating: '⭐⭐⭐ (咬況普普)' };
+        } else {
+            status = { text: '❌ 咬況低迷 (海況不佳)', styleClass: 'danger', rating: '⭐⭐ (活性差)' };
+        }
+
+        return {
+            totalScore,
+            status,
+            details: {
+                tideScore: Math.round(tideScore),
+                pressureScore: Math.round(pressureScore),
+                tempScore: Math.round(tempScore),
+                windFlowScore: Math.round(windFlowScore)
+            }
+        };
+    }
+
+    function renderTideChart(dayData, startHour) {
+        const svg = document.getElementById('tideSvg');
+        const extremesGrid = document.getElementById('tideExtremesGrid');
+        if (!dayData || !dayData.length) return;
+
+        const selectedItem = dayData[startHour] || dayData[0];
+        document.getElementById('tideSelectedTimeDisplay').textContent = selectedItem.time;
+        document.getElementById('tideSelectedHeightDisplay').textContent = `${selectedItem.tideHeight}m`;
+        
+        let tideStateText = '漲潮中';
+        let tideStateClass = 'success';
+        if (startHour > 6 && startHour < 14) {
+            tideStateText = '滿潮轉退';
+            tideStateClass = 'warning';
+        } else if (startHour >= 14 && startHour < 20) {
+            tideStateText = '乾潮中';
+            tideStateClass = 'danger';
+        }
+        const badgeEl = document.getElementById('tideStatusBadge');
+        badgeEl.textContent = tideStateText;
+        badgeEl.className = `status-badge ${tideStateClass}`;
+        badgeEl.style.fontSize = '0.8rem';
+        badgeEl.style.padding = '3px 8px';
+        badgeEl.style.marginBottom = '0';
+
+        const extremes = [
+            { type: '乾潮', height: '-0.17m', time: '02:17', color: 'var(--accent-blue)' },
+            { type: '滿潮', height: '0.30m', time: '07:42', color: 'var(--danger-color)' },
+            { type: '乾潮', height: '-0.36m', time: '14:43', color: 'var(--accent-blue)' },
+            { type: '滿潮', height: '0.22m', time: '20:42', color: 'var(--danger-color)' }
+        ];
+
+        extremesGrid.innerHTML = '';
+        extremes.forEach(ex => {
+            const card = document.createElement('div');
+            card.className = 'tide-extreme-card';
+            card.innerHTML = `
+                <div class="tide-extreme-header" style="color: ${ex.color};">
+                    <span>●</span> <span>${ex.type}</span>
+                </div>
+                <div class="tide-extreme-val">${ex.height}</div>
+                <div class="tide-extreme-time">${ex.time}</div>
+            `;
+            extremesGrid.appendChild(card);
+        });
+
+        const svgWidth = 800;
+        const svgHeight = 160;
+        const paddingY = 20;
+        const usableHeight = svgHeight - paddingY * 2;
+
+        const heights = dayData.map(d => d.tideHeight);
+        const minH = Math.min(...heights, -0.5);
+        const maxH = Math.max(...heights, 0.5);
+        const rangeH = maxH - minH || 1;
+
+        let points = [];
+        dayData.forEach((d, idx) => {
+            const x = (idx / 23) * svgWidth;
+            const y = svgHeight - paddingY - ((d.tideHeight - minH) / rangeH) * usableHeight;
+            points.push(`${x},${y}`);
+        });
+
+        const selectedX = (startHour / 23) * svgWidth;
+        const selectedY = svgHeight - paddingY - ((selectedItem.tideHeight - minH) / rangeH) * usableHeight;
+
+        svg.innerHTML = `
+            <defs>
+                <linearGradient id="tideGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+                    <stop offset="0%" stop-color="#38bdf8" stop-opacity="0.8"/>
+                    <stop offset="100%" stop-color="#38bdf8" stop-opacity="0.1"/>
+                </linearGradient>
+            </defs>
+            <line x1="0" y1="${svgHeight/2}" x2="${svgWidth}" y2="${svgHeight/2}" stroke="#334155" stroke-dasharray="4 4" stroke-width="1" />
+            <polygon points="0,${svgHeight} ${points.join(' ')} ${svgWidth},${svgHeight}" fill="url(#tideGradient)" />
+            <polyline points="${points.join(' ')}" fill="none" stroke="#38bdf8" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" />
+            <line x1="${selectedX}" y1="0" x2="${selectedX}" y2="${svgHeight}" stroke="#38bdf8" stroke-dasharray="3 3" stroke-width="1.5" />
+            <circle cx="${selectedX}" cy="${selectedY}" r="6" fill="#ffffff" stroke="#38bdf8" stroke-width="3" />
+        `;
+    }
+
+    function renderTable(displayData, startHour, endHour) {
+        const table = document.getElementById('forecastTable');
+        table.innerHTML = '';
+        if (!displayData.length) return;
+
+        const loc = myLocations[currentLocationKey];
+        const cfg = loc ? loc.config : DEFAULT_CONFIG;
+        const modeKey = document.getElementById('activityMode').value;
+
+        const rows = [
+            { key: 'time', label: '時間' },
+            { key: 'weather', label: '天氣' },
+            { key: 'temp', label: '溫度 (°C)' },
+            { key: 'windDir', label: '風向' },
+            { key: 'wind', label: '風速 (kt)' },
+            { key: 'gust', label: '陣風 (kt)' },
+            { key: 'current', label: '流速 (kt)' },
+            { key: 'wave', label: '浪高 (m)' },
+            { key: 'period', label: '涌浪週期 (秒)' },
+            { key: 'precip', label: '降水量 (mm)' },
+            { key: 'cloud', label: '雲量 (%)' },
+            { key: 'pressure', label: '氣壓 (hPa)' },
+            { key: 'fishIndex', label: '魚情指數' }
+        ];
+
+        rows.forEach(r => {
+            const tr = document.createElement('tr');
+            let html = `<th class="first-col">${r.label}</th>`;
+            
+            displayData.forEach(d => {
+                const isHighlight = d.hour >= startHour && d.hour < endHour;
+                let levelClass = getParameterLevelClass(r.key, d[r.key], modeKey, cfg);
+                let highlightClass = isHighlight ? 'highlight' : '';
+
+                let cellValue = d[r.key] !== undefined ? d[r.key] : '';
+                if (r.key === 'wind') {
+                    cellValue = `${d.wind}<br><span style="font-size:0.75rem; font-weight:normal;">(${d.windBeaufort}級)</span>`;
+                } else if (r.key === 'gust') {
+                    cellValue = `${d.gust}<br><span style="font-size:0.75rem; font-weight:normal;">(${d.gustBeaufort}級)</span>`;
+                }
+                
+                html += `<td class="${levelClass} ${highlightClass}">${cellValue}</td>`;
+            });
+
+            tr.innerHTML = html;
+            table.appendChild(tr);
+        });
+    }
+
+    function updateDashboard() {
+        updateConfigViewMode();
+        
+        const activeDateInfo = dates[selectedDateIndex];
+        if (astroDataByDate[selectedDateIndex]) {
+            const astro = astroDataByDate[selectedDateIndex];
+            document.getElementById('sunTimeDisplay').textContent = `${astro.sunrise} - ${astro.sunset}`;
+            document.getElementById('moonTimeDisplay').textContent = `${activeDateInfo.moonIcon} ${activeDateInfo.tideName} (月出 ${astro.moonrise})`;
+        }
+
+        if (!currentDataByDate[selectedDateIndex]) return;
+
+        const loc = myLocations[currentLocationKey];
+        const cfg = loc ? loc.config : DEFAULT_CONFIG;
+        const modeKey = document.getElementById('activityMode').value;
+
+        if (modeKey === 'sup') {
+            document.getElementById('modeDescription').innerText = "🏄 SUP 槳板模式：對風速、浪高、流速與涌浪週期極度敏感，週期大於 10 秒會發出長浪危險警示。";
+            document.getElementById('supBoxTitle').textContent = "🏄 SUP 槳板出海安全評估";
+        } else {
+            document.getElementById('modeDescription').innerText = "🛥️ 搭船模式：耐風浪較高，表格顏色依船釣適性門檻動態上色。";
+            document.getElementById('supBoxTitle').textContent = "🛥️ 船釣海象安全門檻評估";
+        }
+
+        const startHour = parseInt(document.getElementById('startTime').value);
+        const windowHours = parseInt(document.getElementById('windowSize').value);
+        const endHour = startHour + windowHours;
+
+        const raw24hData = currentDataByDate[selectedDateIndex];
+        const displayData = raw24hData.filter(d => d.hour % timeStep === 0);
+        const windowData = raw24hData.filter(d => d.hour >= startHour && d.hour < endHour);
+
+        document.getElementById('resultCardTitle').textContent = `📊 綜合評估結果 (${windowHours}小時窗口 - ${activeDateInfo.tideName})`;
+        document.getElementById('windowDisplay').textContent = `評估區間：${String(startHour).padStart(2, '0')}:00 ~ ${String(endHour % 24).padStart(2, '0')}:00`;
+
+        renderTideChart(raw24hData, startHour);
+        renderTable(displayData, startHour, endHour);
+        if (!windowData.length) return;
+
+        const maxWave = Math.max(...windowData.map(d => d.wave));
+        const maxPeriod = Math.max(...windowData.map(d => d.period));
+        const maxWind = Math.max(...windowData.map(d => d.wind));
+        const maxGust = Math.max(...windowData.map(d => d.gust));
+        const maxCurrent = Math.max(...windowData.map(d => d.current));
+
+        document.getElementById('maxWave').textContent = `${maxWave}m`;
+        document.getElementById('maxPeriod').textContent = `${maxPeriod}s`;
+        document.getElementById('maxWind').textContent =`${maxWind} kt (${knotsToBeaufort(maxWind)}級)`;
+        document.getElementById('maxGust').textContent = `${maxGust} kt (${knotsToBeaufort(maxGust)}級)`;
+
+        const supReasons = [];
+        let limitWave = modeKey === 'sup' ? cfg.sup_maxWave : 1.5;
+        let limitPeriod = modeKey === 'sup' ? cfg.sup_maxPeriod : 12.0;
+        let limitWind = modeKey === 'sup' ? cfg.sup_maxWind : cfg.boat_windWarn;
+        let limitGust = modeKey === 'sup' ? cfg.sup_maxGust : 22.0;
+        let limitCurrent = modeKey === 'sup' ? cfg.sup_maxCurrent : cfg.boat_currentDanger;
+
+        if (maxWave > limitWave) supReasons.push(`波浪超標 > ${limitWave}m (${maxWave}m)`);
+        if (maxPeriod > limitPeriod && modeKey === 'sup') supReasons.push(`涌浪週期過長 > ${limitPeriod}秒 (${maxPeriod}s，長浪危險)`);
+        if (maxWind > limitWind) supReasons.push(`風速超標 > ${limitWind} kt (${maxWind} kt)`);
+        if (maxGust > limitGust) supReasons.push(`陣風超標 > ${limitGust} kt (${maxGust} kt)`);
+        if (maxCurrent > limitCurrent) supReasons.push(`海流超標 > ${limitCurrent} kt (${maxCurrent} kt)`);
+
+        const supBox = document.getElementById('supBox');
+        const supBadge = document.getElementById('supBadge');
+        const supReasonsList = document.getElementById('supReasons');
+        supReasonsList.innerHTML = '';
+
+        if (supReasons.length > 0) {
+            supBox.className = 'result-box danger';
+            supBadge.className = 'status-badge danger';
+            supBadge.textContent = modeKey === 'sup' ? '❌ 不建議 SUP 出海' : '❌ 海象超標 (不宜出海)';
+            supReasons.forEach(r => {
+                const li = document.createElement('li');
+                li.textContent = r;
+                supReasonsList.appendChild(li);
+            });
+        } else {
+            supBox.className = 'result-box success';
+            supBadge.className = 'status-badge success';
+            supBadge.textContent = modeKey === 'sup' ? '✅ 氣海象安全，適合 SUP' : '✅ 氣海象安全，適合搭船';
+        }
+
+        const boatResult = calculateBoatScore(windowData, cfg, activeDateInfo.isSpringTide);
+        const boatBox = document.getElementById('boatBox');
+        const boatBadge = document.getElementById('boatBadge');
+
+        boatBox.className = `result-box ${boatResult.status.styleClass}`;
+        boatBadge.className = `status-badge ${boatResult.status.styleClass}`;
+        boatBadge.textContent = boatResult.status.text;
+        document.getElementById('boatScoreText').textContent = `${boatResult.totalScore} 分`;
+        document.getElementById('boatRating').textContent = boatResult.status.rating;
+
+        document.getElementById('scoreTide').textContent = `${boatResult.details.tideScore}分`;
+        document.getElementById('scorePressure').textContent = `${boatResult.details.pressureScore}分`;
+        document.getElementById('scoreTemp').textContent = `${boatResult.details.tempScore}分`;
+        document.getElementById('scoreWindFlow').textContent = `${boatResult.details.windFlowScore}分`;
+    }
+
+    window.onload = init;
+</script>
+
+</body>
+</html>
