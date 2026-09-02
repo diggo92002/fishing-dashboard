@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html lang="zh-TW">
 <head>
-    <link rel="manifest" href="manifest.json">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Fishing Dashboard - 整合海象安全與活動門檻儀表板</title>
@@ -410,41 +409,1194 @@
 
         .config-section-title { font-weight: bold; font-size: 0.85rem; margin-bottom: 8px; color: var(--accent-blue); }
         .config-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; font-size: 0.8rem; }
+
+        /* ===== Mobile Version Overrides ===== */
+        body.app-shell.mobile-version {
+            padding: 8px;
+        }
+        body.app-shell.mobile-version .container {
+            max-width: 430px;
+            gap: 10px;
+        }
+        body.app-shell.mobile-version h1 {
+            font-size: 1.2rem;
+            line-height: 1.35;
+        }
+        body.app-shell.mobile-version .subtitle {
+            font-size: 0.74rem;
+            line-height: 1.4;
+            padding: 0 8px;
+        }
+        body.app-shell.mobile-version .card {
+            padding: 10px 12px;
+            border-radius: 10px;
+        }
+        body.app-shell.mobile-version .card-title {
+            font-size: 0.95rem;
+        }
+        body.app-shell.mobile-version .card-header-flex,
+        body.app-shell.mobile-version .controls-container,
+        body.app-shell.mobile-version .control-group,
+        body.app-shell.mobile-version .astro-info-box,
+        body.app-shell.mobile-version .tide-card-header,
+        body.app-shell.mobile-version .risk-metrics,
+        body.app-shell.mobile-version .config-row {
+            flex-direction: column;
+            align-items: stretch;
+        }
+        body.app-shell.mobile-version .card-header-flex > div:last-child,
+        body.app-shell.mobile-version #spotCard .controls-container > button,
+        body.app-shell.mobile-version #spotCard .controls-container > span,
+        body.app-shell.mobile-version .controls-container > div,
+        body.app-shell.mobile-version .controls-container > button,
+        body.app-shell.mobile-version .controls-container > span,
+        body.app-shell.mobile-version .control-group,
+        body.app-shell.mobile-version select,
+        body.app-shell.mobile-version input[type="number"],
+        body.app-shell.mobile-version input[type="text"],
+        body.app-shell.mobile-version .toggle-btn,
+        body.app-shell.mobile-version .delete-btn,
+        body.app-shell.mobile-version .add-btn {
+            width: 100%;
+            box-sizing: border-box;
+        }
+        body.app-shell.mobile-version .toggle-btn,
+        body.app-shell.mobile-version .delete-btn,
+        body.app-shell.mobile-version .add-btn,
+        body.app-shell.mobile-version select,
+        body.app-shell.mobile-version input[type="number"],
+        body.app-shell.mobile-version input[type="text"] {
+            min-height: 40px;
+            font-size: 0.92rem;
+        }
+        body.app-shell.mobile-version #spotCard .controls-container {
+            gap: 10px;
+        }
+        body.app-shell.mobile-version #spotCard label,
+        body.app-shell.mobile-version #dateCard label,
+        body.app-shell.mobile-version #resultCard label {
+            margin-bottom: 2px;
+        }
+        body.app-shell.mobile-version .date-selector {
+            gap: 6px;
+            padding-bottom: 4px;
+            scroll-snap-type: x mandatory;
+        }
+        body.app-shell.mobile-version .date-btn {
+            min-width: 92px;
+            flex: 0 0 92px;
+            height: 60px;
+            scroll-snap-align: start;
+        }
+        body.app-shell.mobile-version .astro-info-box > div[style*="|"] {
+            display: none;
+        }
+        body.app-shell.mobile-version #fishingMap {
+            height: 260px;
+        }
+        body.app-shell.mobile-version .model-badges {
+            gap: 8px;
+        }
+        body.app-shell.mobile-version .model-tag {
+            font-size: 0.7rem;
+            line-height: 1.35;
+        }
+        body.app-shell.mobile-version table {
+            font-size: 0.74rem;
+        }
+        body.app-shell.mobile-version th,
+        body.app-shell.mobile-version td {
+            padding: 5px 6px;
+        }
+        body.app-shell.mobile-version .tide-card-header {
+            gap: 8px;
+            padding: 10px 12px;
+        }
+        body.app-shell.mobile-version .tide-chart-container {
+            padding: 10px;
+        }
+        body.app-shell.mobile-version .tide-svg {
+            height: 130px;
+        }
+        body.app-shell.mobile-version .tide-extremes-grid,
+        body.app-shell.mobile-version .boat-score-breakdown,
+        body.app-shell.mobile-version .config-grid,
+        body.app-shell.mobile-version .results-grid {
+            grid-template-columns: 1fr;
+        }
+        body.app-shell.mobile-version .risk-metrics {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 8px;
+        }
+        body.app-shell.mobile-version .risk-metrics > div {
+            background: rgba(15, 23, 42, 0.75);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            padding: 8px;
+            font-size: 0.78rem;
+        }
+        body.app-shell.mobile-version #windowDisplay {
+            margin-left: 0 !important;
+            text-align: center;
+            padding-top: 2px;
+        }
+        body.app-shell.mobile-version .table-container {
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+        body.app-shell.mobile-version .reason-list {
+            min-height: 0;
+        }
+
+        body.app-shell.mobile-version .card-header-flex {
+            flex-direction: row;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+        }
+        body.app-shell.mobile-version .spot-header-actions {
+            display: flex;
+            gap: 6px;
+            align-items: center;
+            margin-left: auto;
+            flex: 0 0 auto;
+        }
+        body.app-shell.mobile-version .compact-btn {
+            width: auto;
+            min-height: 30px;
+            padding: 4px 8px;
+            font-size: 0.72rem;
+            line-height: 1.1;
+            white-space: nowrap;
+            flex: 0 0 auto;
+        }
+        body.app-shell.mobile-version .spot-main-row {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) auto;
+            grid-template-areas:
+                "favorite delete"
+                "status refresh";
+            gap: 8px;
+            align-items: center;
+        }
+        body.app-shell.mobile-version .favorite-row {
+            grid-area: favorite;
+            display: grid;
+            grid-template-columns: auto 1fr;
+            gap: 6px;
+            align-items: center;
+            min-width: 0;
+        }
+        body.app-shell.mobile-version .favorite-row label {
+            margin: 0;
+            font-size: 0.74rem;
+            white-space: nowrap;
+        }
+        body.app-shell.mobile-version .favorite-row select {
+            width: 100%;
+            min-width: 0;
+            min-height: 34px;
+            font-size: 0.78rem;
+        }
+        body.app-shell.mobile-version .spot-main-row > .delete-btn {
+            grid-area: delete;
+            justify-self: end;
+            min-width: 34px;
+            padding-left: 6px;
+            padding-right: 6px;
+        }
+        body.app-shell.mobile-version .refresh-btn {
+            grid-area: refresh;
+            width: auto;
+            justify-self: end;
+            min-width: 34px;
+            padding-left: 6px;
+            padding-right: 6px;
+        }
+        body.app-shell.mobile-version .sync-status {
+            grid-area: status;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background: #0f172a;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            min-height: 30px;
+            font-size: 0.68rem !important;
+            padding: 4px 8px;
+            box-sizing: border-box;
+        }
+        body.app-shell.mobile-version .section-headline {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 8px;
+            font-weight: bold;
+            color: var(--accent-blue);
+            margin-bottom: 10px;
+            font-size: 0.82rem;
+        }
+        body.app-shell.mobile-version .section-headline span {
+            flex: 1 1 auto;
+        }
+        body.app-shell.mobile-version .compact-hide-btn {
+            margin-left: auto;
+            font-size: 0.66rem;
+            padding: 3px 6px;
+        }
+        body.app-shell.mobile-version #coordsInputWrapper {
+            display: none !important;
+        }
+        body.app-shell.mobile-version .compact-date-selector {
+            gap: 4px;
+        }
+        body.app-shell.mobile-version .date-btn {
+            min-width: 52px;
+            flex: 0 0 52px;
+            height: 36px;
+            border-radius: 6px;
+        }
+        body.app-shell.mobile-version .date-top {
+            gap: 0;
+            padding: 2px;
+        }
+        body.app-shell.mobile-version .date-week {
+            font-size: 0.42rem;
+        }
+        body.app-shell.mobile-version .date-main {
+            font-size: 0.52rem;
+        }
+        body.app-shell.mobile-version .date-btn .date-top span[style*="font-size: 0.72rem"] {
+            font-size: 0.38rem !important;
+            margin-top: 0 !important;
+        }
+        body.app-shell.mobile-version .time-control-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 6px;
+            align-items: end;
+        }
+        body.app-shell.mobile-version .inline-time-group {
+            display: grid;
+            grid-template-columns: auto 1fr;
+            gap: 4px;
+            align-items: center;
+        }
+        body.app-shell.mobile-version .inline-time-group label {
+            font-size: 0.72rem;
+            white-space: nowrap;
+        }
+        body.app-shell.mobile-version .inline-time-group select {
+            min-height: 34px;
+            font-size: 0.76rem;
+        }
+        body.app-shell.mobile-version .mobile-activity-row,
+        body.app-shell.mobile-version #windowDisplay {
+            grid-column: 1 / -1;
+        }
+        body.app-shell.mobile-version .mobile-activity-row {
+            margin-top: 2px;
+            font-size: 0.74rem;
+        }
+        body.app-shell.mobile-version .mobile-activity-row label,
+        body.app-shell.mobile-version .mobile-activity-row select {
+            font-size: 0.74rem;
+        }
+        body.app-shell.mobile-version .model-tag {
+            display: none;
+        }
+        body.app-shell.mobile-version .model-badges {
+            justify-content: flex-end;
+            margin-bottom: 6px;
+        }
+        body.app-shell.mobile-version .forecast-toolbar {
+            margin-left: auto;
+        }
+        body.app-shell.mobile-version table {
+            font-size: 0.4rem;
+        }
+        body.app-shell.mobile-version th,
+        body.app-shell.mobile-version td {
+            padding: 3px 4px;
+        }
+
+        body.app-shell.mobile-version #dateCard .card-title {
+            font-size: 0.8rem;
+        }
+        body.app-shell.mobile-version #dateCard .controls-container {
+            gap: 4px;
+        }
+        body.app-shell.mobile-version #dateCard .astro-info-box {
+            padding: 6px 8px;
+            font-size: 0.68rem;
+            gap: 6px;
+        }
+        body.app-shell.mobile-version #dateCard .astro-item,
+        body.app-shell.mobile-version #dateCard .astro-item strong,
+        body.app-shell.mobile-version #dateCard #windowDisplay {
+            font-size: 0.68rem !important;
+        }
+        body.app-shell.mobile-version #dateCard .mobile-activity-row label,
+        body.app-shell.mobile-version #dateCard .mobile-activity-row select,
+        body.app-shell.mobile-version #dateCard .inline-time-group label,
+        body.app-shell.mobile-version #dateCard .inline-time-group select {
+            font-size: 0.68rem;
+        }
+        body.app-shell.mobile-version #dateCard .mobile-activity-row select,
+        body.app-shell.mobile-version #dateCard .inline-time-group select {
+            min-height: 32px;
+        }
+        body.app-shell.mobile-version .tide-extreme-header {
+            justify-content: center;
+            gap: 3px;
+        }
+        body.app-shell.mobile-version .tide-type-two-line {
+            display: inline-block;
+            line-height: 0.95;
+            text-align: center;
+        }
+        body.app-shell.mobile-version #resultCard .card-header-flex {
+            flex-direction: row;
+            align-items: flex-start;
+            flex-wrap: nowrap;
+        }
+        body.app-shell.mobile-version #resultCardTitle {
+            flex: 1 1 auto;
+            min-width: 0;
+            font-size: 0.78rem;
+            line-height: 1.25;
+        }
+        body.app-shell.mobile-version #toggleConfigBoxBtn {
+            flex: 0 0 auto;
+            min-width: 34px;
+            padding-left: 6px;
+            padding-right: 6px;
+        }
+
+        /* ===== Mobile compact pass from screenshot review ===== */
+        body.app-shell.mobile-version .container > div:first-child {
+            margin-bottom: 0;
+        }
+        body.app-shell.mobile-version h1 {
+            margin: 4px 0 2px;
+            font-size: 1.02rem;
+            line-height: 1.2;
+        }
+        body.app-shell.mobile-version #spotCard {
+            padding-top: 8px;
+            padding-bottom: 8px;
+        }
+        body.app-shell.mobile-version #spotCard .card-header-flex {
+            margin-bottom: 8px !important;
+        }
+        body.app-shell.mobile-version #spotCard .spot-main-row {
+            margin-top: 6px !important;
+            padding-bottom: 6px !important;
+            gap: 5px 6px;
+        }
+        body.app-shell.mobile-version #spotCard .favorite-row label {
+            font-size: 0.68rem;
+        }
+        body.app-shell.mobile-version #spotCard .favorite-row select {
+            min-height: 30px;
+            font-size: 0.72rem;
+            padding: 3px 6px;
+        }
+        body.app-shell.mobile-version #spotCard .delete-btn,
+        body.app-shell.mobile-version #spotCard .refresh-btn {
+            min-width: 30px;
+            min-height: 30px;
+            height: 30px;
+            padding: 2px 5px;
+            font-size: 0.72rem;
+        }
+        body.app-shell.mobile-version #spotCard .sync-status {
+            justify-self: start;
+            width: auto;
+            min-height: 0;
+            padding: 0;
+            border: 0;
+            background: transparent;
+            font-size: 0.64rem !important;
+        }
+        body.app-shell.mobile-version .compact-section-title {
+            font-size: 0.78rem;
+            margin-bottom: 3px;
+        }
+        body.app-shell.mobile-version .time-control-row {
+            gap: 4px 5px;
+            margin-top: 4px;
+        }
+        body.app-shell.mobile-version .inline-time-group {
+            gap: 3px;
+        }
+        body.app-shell.mobile-version .inline-time-group label {
+            font-size: 0.64rem;
+        }
+        body.app-shell.mobile-version .inline-time-group select {
+            min-height: 30px;
+            padding: 3px 5px;
+            font-size: 0.68rem;
+        }
+        body.app-shell.mobile-version .compact-activity-row {
+            display: grid;
+            grid-template-columns: auto minmax(0, 1fr);
+            gap: 5px;
+            align-items: center;
+            min-height: 32px;
+            margin-top: 0;
+        }
+        body.app-shell.mobile-version .compact-activity-row label {
+            margin: 0 !important;
+            white-space: nowrap;
+            font-size: 0.64rem !important;
+        }
+        body.app-shell.mobile-version .compact-activity-row select {
+            min-height: 30px;
+            padding: 2px 5px;
+            font-size: 0.68rem !important;
+        }
+        body.app-shell.mobile-version #windowDisplay {
+            padding-top: 0;
+            margin-top: 0;
+            font-size: 0.64rem !important;
+            line-height: 1.15;
+        }
+        body.app-shell.mobile-version .compact-astro-box {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 3px;
+            padding: 5px 7px;
+            margin-top: 5px;
+            line-height: 1.15;
+        }
+        body.app-shell.mobile-version .compact-astro-box .astro-item {
+            display: grid;
+            grid-template-columns: auto 1fr;
+            gap: 3px;
+            align-items: center;
+            font-size: 0.62rem;
+        }
+        body.app-shell.mobile-version .compact-astro-box .astro-item strong {
+            font-size: 0.62rem !important;
+            line-height: 1.15;
+        }
+        body.app-shell.mobile-version .compact-astro-box > div[style*="|"] {
+            display: none;
+        }
+        body.app-shell.mobile-version .forecast-toolbar {
+            width: auto !important;
+        }
+        body.app-shell.mobile-version .step-btn {
+            width: auto !important;
+            min-height: 28px;
+            height: 28px;
+            padding: 2px 6px;
+            font-size: 0.62rem;
+        }
+        body.app-shell.mobile-version .tide-extremes-grid {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 6px;
+        }
+        body.app-shell.mobile-version .tide-extreme-card {
+            min-height: 72px;
+            padding: 6px 8px;
+            display: grid;
+            grid-template-columns: auto 1fr;
+            grid-template-areas:
+                "val type"
+                "time type";
+            align-items: center;
+            column-gap: 8px;
+            row-gap: 0;
+        }
+        body.app-shell.mobile-version .tide-extreme-header {
+            grid-area: type;
+            justify-self: end;
+            align-self: center;
+            font-size: 0.52rem;
+        }
+        body.app-shell.mobile-version .tide-extreme-val {
+            grid-area: val;
+            align-self: end;
+            font-size: 0.88rem;
+            line-height: 1;
+        }
+        body.app-shell.mobile-version .tide-extreme-time {
+            grid-area: time;
+            align-self: start;
+            font-size: 0.6rem;
+            line-height: 1.1;
+        }
+        body.app-shell.mobile-version #resultCard {
+            padding: 8px 10px;
+        }
+        body.app-shell.mobile-version #resultCard .card-header-flex {
+            margin-bottom: 4px !important;
+            align-items: center;
+        }
+        body.app-shell.mobile-version #resultCardTitle {
+            font-size: 0.7rem;
+            line-height: 1.15;
+        }
+        body.app-shell.mobile-version #toggleConfigBoxBtn {
+            min-width: 30px;
+            min-height: 28px;
+            height: 28px;
+            padding: 2px 5px;
+            font-size: 0.64rem;
+        }
+        body.app-shell.mobile-version #modeDescription {
+            font-size: 0.64rem !important;
+            line-height: 1.3;
+            margin-bottom: 8px !important;
+        }
+        body.app-shell.mobile-version .compact-result-box {
+            padding: 9px;
+        }
+        body.app-shell.mobile-version .compact-result-box > div:first-child > div:first-child,
+        body.app-shell.mobile-version #boatBox > div:first-child > div:first-child {
+            font-size: 0.78rem;
+            margin-bottom: 5px !important;
+        }
+        body.app-shell.mobile-version .compact-result-box .status-badge {
+            font-size: 0.72rem;
+            padding: 3px 7px;
+            margin-bottom: 5px;
+        }
+        body.app-shell.mobile-version .risk-metrics {
+            gap: 5px;
+            padding: 5px;
+        }
+        body.app-shell.mobile-version .risk-metrics > div {
+            padding: 5px 6px;
+            font-size: 0.64rem;
+        }
+        body.app-shell.mobile-version #boatBox .boat-score-breakdown {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 3px 8px;
+            padding: 6px;
+            margin-top: 5px;
+            font-size: 0.62rem;
+        }
+        body.app-shell.mobile-version #boatBox #boatScoreText {
+            font-size: 0.92rem !important;
+        }
+        body.app-shell.mobile-version #boatBox #boatRating {
+            font-size: 0.66rem !important;
+            margin-bottom: 3px !important;
+        }
+
+        /* ===== Mobile compact pass 4: screenshot-aligned ===== */
+        body.app-shell.mobile-version #spotCard .spot-main-row {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) 28px 28px auto;
+            grid-template-areas: "favorite delete refresh status";
+            gap: 5px;
+            align-items: center;
+            margin-top: 4px !important;
+            padding-bottom: 5px !important;
+        }
+        body.app-shell.mobile-version #spotCard .favorite-row {
+            grid-area: favorite;
+            grid-template-columns: auto minmax(0, 1fr);
+            gap: 4px;
+        }
+        body.app-shell.mobile-version #spotCard .favorite-row label {
+            font-size: 0.62rem;
+        }
+        body.app-shell.mobile-version #spotCard .favorite-row select {
+            min-height: 28px;
+            height: 28px;
+            padding: 2px 5px;
+            font-size: 0.66rem;
+        }
+        body.app-shell.mobile-version #spotCard .delete-btn {
+            grid-area: delete;
+        }
+        body.app-shell.mobile-version #spotCard .refresh-btn {
+            grid-area: refresh;
+        }
+        body.app-shell.mobile-version #spotCard .delete-btn,
+        body.app-shell.mobile-version #spotCard .refresh-btn {
+            width: 28px !important;
+            min-width: 28px;
+            height: 28px;
+            min-height: 28px;
+            padding: 0;
+            font-size: 0.7rem;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+        body.app-shell.mobile-version #spotCard .sync-status {
+            grid-area: status;
+            justify-self: end;
+            white-space: nowrap;
+            font-size: 0.57rem !important;
+            line-height: 1;
+        }
+
+        body.app-shell.mobile-version #dateCard .time-control-row {
+            display: grid;
+            grid-template-columns: max-content max-content max-content max-content;
+            grid-template-areas: "start window activity range";
+            gap: 5px;
+            align-items: center;
+            overflow-x: auto;
+            overflow-y: hidden;
+            white-space: nowrap;
+            -webkit-overflow-scrolling: touch;
+            padding-bottom: 2px;
+        }
+        body.app-shell.mobile-version #dateCard .inline-time-group:nth-child(1) { grid-area: start; }
+        body.app-shell.mobile-version #dateCard .inline-time-group:nth-child(2) { grid-area: window; }
+        body.app-shell.mobile-version #dateCard .compact-activity-row {
+            grid-area: activity;
+            margin: 0;
+            padding: 2px 5px !important;
+            min-height: 28px;
+            width: auto !important;
+            display: grid;
+            grid-template-columns: auto 112px;
+            gap: 3px;
+        }
+        body.app-shell.mobile-version #dateCard #windowDisplay {
+            grid-area: range;
+            width: auto !important;
+            margin: 0 0 0 2px !important;
+            padding: 0 !important;
+            font-size: 0.58rem !important;
+            white-space: nowrap;
+        }
+        body.app-shell.mobile-version #dateCard .inline-time-group {
+            display: grid;
+            grid-template-columns: auto 58px;
+            gap: 3px;
+        }
+        body.app-shell.mobile-version #dateCard .inline-time-group label,
+        body.app-shell.mobile-version #dateCard .compact-activity-row label {
+            font-size: 0.58rem !important;
+        }
+        body.app-shell.mobile-version #dateCard .inline-time-group select,
+        body.app-shell.mobile-version #dateCard .compact-activity-row select {
+            height: 28px;
+            min-height: 28px;
+            padding: 2px 4px;
+            font-size: 0.61rem !important;
+        }
+        body.app-shell.mobile-version #dateCard .compact-astro-box {
+            display: block;
+            padding: 4px 6px;
+            margin-top: 4px;
+        }
+        body.app-shell.mobile-version #dateCard .compact-astro-box .astro-item:first-child {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            gap: 4px;
+            font-size: 0.6rem;
+        }
+        body.app-shell.mobile-version #dateCard .moon-astro-item {
+            display: none !important;
+        }
+        body.app-shell.mobile-version #dateCard .compact-astro-box .astro-item:first-child strong {
+            font-size: 0.62rem !important;
+        }
+
+        body.app-shell.mobile-version .tide-extremes-grid {
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 4px;
+        }
+        body.app-shell.mobile-version .tide-extreme-card {
+            min-height: 54px;
+            padding: 5px 6px;
+            grid-template-columns: minmax(0, 1fr) auto;
+            column-gap: 3px;
+        }
+        body.app-shell.mobile-version .tide-extreme-header {
+            font-size: 0.42rem;
+        }
+        body.app-shell.mobile-version .tide-extreme-val {
+            font-size: 0.72rem;
+        }
+        body.app-shell.mobile-version .tide-extreme-time {
+            font-size: 0.5rem;
+        }
+
+        body.app-shell.mobile-version #resultCard .card-header-flex {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            flex-wrap: nowrap;
+            gap: 5px;
+        }
+        body.app-shell.mobile-version #resultCardTitle {
+            flex: 1 1 auto;
+            min-width: 0;
+            font-size: 0.66rem;
+        }
+        body.app-shell.mobile-version #toggleConfigBoxBtn {
+            width: 28px !important;
+            min-width: 28px;
+            height: 26px;
+            min-height: 26px;
+            padding: 0;
+            font-size: 0.62rem;
+        }
+
+
+        /* ===== Mobile compact pass 5: annotated screenshot revisions ===== */
+        body.app-shell.mobile-version #spotCard .card-header-flex {
+            display: grid;
+            grid-template-columns: auto minmax(0, 1fr);
+            align-items: center;
+            gap: 6px;
+            flex-wrap: nowrap;
+            margin-bottom: 5px !important;
+        }
+        body.app-shell.mobile-version #spotCard .card-header-flex > .card-title {
+            font-size: 0.72rem;
+            white-space: nowrap;
+        }
+        body.app-shell.mobile-version #spotCard .spot-header-actions,
+        body.app-shell.mobile-version #spotCard .card-header-flex > div:last-child {
+            width: auto !important;
+            min-width: 0;
+            display: flex !important;
+            flex-direction: row !important;
+            align-items: center;
+            justify-content: flex-start;
+            gap: 4px !important;
+            margin-left: 0 !important;
+        }
+        body.app-shell.mobile-version #spotCard .spot-header-actions .compact-btn {
+            width: auto !important;
+            min-width: 0;
+            min-height: 27px;
+            height: 27px;
+            padding: 2px 6px;
+            font-size: 0.58rem;
+        }
+
+        /* 出海條件：只留三個控制項同列，不顯示評估區間與日出日落。 */
+        body.app-shell.mobile-version #dateCard .time-control-row {
+            display: grid;
+            grid-template-columns: max-content max-content minmax(0, 1fr);
+            grid-template-areas: "start window activity";
+            gap: 4px;
+            align-items: center;
+            overflow: visible;
+            white-space: normal;
+            padding-bottom: 0;
+        }
+        body.app-shell.mobile-version #dateCard .inline-time-group:nth-child(1) { grid-area: start; }
+        body.app-shell.mobile-version #dateCard .inline-time-group:nth-child(2) { grid-area: window; }
+        body.app-shell.mobile-version #dateCard .compact-activity-row { grid-area: activity; }
+        body.app-shell.mobile-version #dateCard #windowDisplay,
+        body.app-shell.mobile-version #dateCard .compact-astro-box {
+            display: none !important;
+        }
+        body.app-shell.mobile-version #dateCard .inline-time-group {
+            grid-template-columns: auto 50px;
+            gap: 2px;
+        }
+        body.app-shell.mobile-version #dateCard .compact-activity-row {
+            grid-template-columns: auto minmax(90px, 1fr);
+            width: 100% !important;
+            min-width: 0;
+            padding: 2px 4px !important;
+        }
+        body.app-shell.mobile-version #dateCard .inline-time-group label,
+        body.app-shell.mobile-version #dateCard .compact-activity-row label {
+            font-size: 0.54rem !important;
+        }
+        body.app-shell.mobile-version #dateCard .inline-time-group select,
+        body.app-shell.mobile-version #dateCard .compact-activity-row select {
+            min-width: 0;
+            height: 27px;
+            min-height: 27px;
+            font-size: 0.57rem !important;
+            padding: 2px 3px;
+        }
+
+        /* 完整資料庫：2 x 2 排列，減少垂直高度。 */
+        body.app-shell.mobile-version #addSpotBox {
+            padding: 7px;
+        }
+        body.app-shell.mobile-version #addSpotBox > .section-headline {
+            margin-bottom: 5px;
+            font-size: 0.68rem;
+        }
+        body.app-shell.mobile-version #addSpotBox > .controls-container {
+            display: grid !important;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 6px;
+            padding-top: 6px !important;
+        }
+        body.app-shell.mobile-version #addSpotBox > .controls-container > .control-group {
+            width: 100% !important;
+            min-width: 0;
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 2px;
+            align-items: stretch;
+        }
+        body.app-shell.mobile-version #addSpotBox label {
+            font-size: 0.6rem;
+            margin: 0 !important;
+        }
+        body.app-shell.mobile-version #addSpotBox select,
+        body.app-shell.mobile-version #addSpotBox .add-btn {
+            width: 100% !important;
+            min-height: 30px;
+            height: 30px;
+            padding: 2px 5px;
+            font-size: 0.62rem;
+        }
+        body.app-shell.mobile-version #addSpotBox > .controls-container > div:last-child {
+            width: 100% !important;
+            margin-left: 0 !important;
+            display: flex;
+            align-items: end;
+        }
+
+        /* 釣點名稱與儲存列保留；經緯度欄位隱藏。 */
+        body.app-shell.mobile-version #coordsInputWrapper[hidden] {
+            display: none !important;
+        }
+        body.app-shell.mobile-version #coordsInputWrapper {
+            width: 100%;
+        }
+        body.app-shell.mobile-version .spot-save-wrapper {
+            margin-top: 10px;
+        }
+        body.app-shell.mobile-version .spot-save-bar {
+            display: grid;
+            grid-template-columns: auto minmax(0, 1fr) auto;
+            align-items: center;
+            gap: 8px;
+            background-color: rgba(15, 23, 42, 0.55);
+            border-top: 1px solid rgba(148, 163, 184, 0.16);
+            padding-top: 10px;
+        }
+        body.app-shell.mobile-version .spot-save-bar .control-group:nth-child(1),
+        body.app-shell.mobile-version .spot-save-bar .control-group:nth-child(2) {
+            display: none !important;
+        }
+        body.app-shell.mobile-version .spot-save-bar .control-group:nth-child(3) {
+            display: grid !important;
+            grid-template-columns: auto minmax(0, 1fr);
+            align-items: center;
+            gap: 6px;
+            min-width: 0;
+            width: 100% !important;
+            margin-left: 0 !important;
+        }
+        body.app-shell.mobile-version .spot-save-bar .control-group:nth-child(3) label {
+            font-size: 0.72rem !important;
+            white-space: nowrap;
+            margin: 0 !important;
+        }
+        body.app-shell.mobile-version .spot-save-bar .control-group:nth-child(3) input {
+            width: 100% !important;
+            min-width: 0;
+            min-height: 34px;
+            font-size: 0.78rem;
+        }
+        body.app-shell.mobile-version .spot-save-btn {
+            width: auto !important;
+            min-height: 34px;
+            padding: 6px 10px;
+            font-size: 0.76rem;
+            white-space: nowrap;
+        }
+
+        /* 綜合評估齒輪固定推到最右。 */
+        body.app-shell.mobile-version #resultCard .card-header-flex {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) auto;
+            align-items: center;
+            gap: 6px;
+        }
+        body.app-shell.mobile-version #resultCard .card-header-flex > div:last-child {
+            width: auto !important;
+            margin-left: auto !important;
+            justify-self: end;
+        }
+        body.app-shell.mobile-version #toggleConfigBoxBtn {
+            justify-self: end;
+        }
+
+        /* 不顯示獨立的時間間隔控制；時間列本身可點擊切換。 */
+        body.app-shell.mobile-version .forecast-toolbar,
+        body.app-shell.mobile-version .step-btn {
+            display: none !important;
+        }
+        body.app-shell.mobile-version #forecastCard .model-badges {
+            display: none !important;
+        }
+        body.app-shell.mobile-version #forecastTable tr.time-step-row {
+            cursor: pointer;
+            user-select: none;
+            -webkit-tap-highlight-color: rgba(56, 189, 248, 0.15);
+        }
+        body.app-shell.mobile-version #forecastTable tr.time-step-row:active th,
+        body.app-shell.mobile-version #forecastTable tr.time-step-row:active td {
+            filter: brightness(1.15);
+        }
+
+        /* 門檻設定：欄位改為雙欄，縮短面板高度。 */
+        body.app-shell.mobile-version #configBox {
+            margin-top: 8px !important;
+            padding-top: 8px !important;
+        }
+        body.app-shell.mobile-version #configBox > div:first-child {
+            font-size: 0.6rem !important;
+            line-height: 1.25;
+            margin-bottom: 7px !important;
+        }
+        body.app-shell.mobile-version #configBox .config-grid {
+            display: block;
+        }
+        body.app-shell.mobile-version #supConfigSection,
+        body.app-shell.mobile-version #boatConfigSection {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 6px;
+            padding: 7px;
+        }
+        body.app-shell.mobile-version #configBox .config-section-title {
+            grid-column: 1 / -1;
+            font-size: 0.68rem;
+            margin-bottom: 2px;
+        }
+        body.app-shell.mobile-version #configBox .config-row {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 2px;
+            align-items: stretch;
+            margin: 0;
+            min-width: 0;
+        }
+        body.app-shell.mobile-version #configBox .config-row label {
+            font-size: 0.55rem;
+            line-height: 1.15;
+            margin: 0;
+        }
+        body.app-shell.mobile-version #configBox .config-row input {
+            width: 100% !important;
+            min-width: 0;
+            min-height: 30px;
+            height: 30px;
+            padding: 3px 5px;
+            font-size: 0.64rem;
+        }
+        body.app-shell.mobile-version #configBox > div:last-child {
+            display: grid !important;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 6px !important;
+            margin-top: 7px !important;
+        }
+        body.app-shell.mobile-version #configBox > div:last-child button {
+            width: 100% !important;
+            min-height: 31px;
+            height: 31px;
+            padding: 2px 5px;
+            font-size: 0.58rem;
+        }
+
+        /* V6: 地圖展開時，釣點名稱＋儲存列固定顯示在地圖上方。 */
+        body.app-shell.mobile-version .spot-save-wrapper {
+            margin: 8px 0 6px;
+        }
+        body.app-shell.mobile-version .spot-save-bar {
+            display: grid !important;
+            grid-template-columns: minmax(0, 1fr) auto !important;
+            gap: 6px !important;
+            align-items: end !important;
+            padding: 6px 0 !important;
+            margin: 0 !important;
+            background: transparent !important;
+            border-top: 0 !important;
+        }
+        body.app-shell.mobile-version .spot-save-bar .control-group:nth-child(1),
+        body.app-shell.mobile-version .spot-save-bar .control-group:nth-child(2) {
+            display: none !important;
+        }
+        body.app-shell.mobile-version .spot-save-bar .control-group:nth-child(3) {
+            display: grid !important;
+            grid-template-columns: auto minmax(0, 1fr) !important;
+            gap: 5px !important;
+            align-items: center !important;
+            width: 100% !important;
+            margin: 0 !important;
+        }
+        body.app-shell.mobile-version .spot-save-bar .control-group:nth-child(3) label {
+            font-size: 0.66rem !important;
+            white-space: nowrap;
+            margin: 0 !important;
+        }
+        body.app-shell.mobile-version .spot-save-bar .control-group:nth-child(3) input {
+            min-height: 30px !important;
+            height: 30px !important;
+            width: 100% !important;
+            font-size: 0.72rem !important;
+            padding: 3px 6px !important;
+        }
+        body.app-shell.mobile-version .spot-save-btn {
+            min-height: 30px !important;
+            height: 30px !important;
+            width: auto !important;
+            padding: 3px 8px !important;
+            font-size: 0.66rem !important;
+            white-space: nowrap;
+        }
+
+        /* 常用釣點下拉再縮短，右側三個控制固定留空間。 */
+        body.app-shell.mobile-version #spotCard .spot-main-row {
+            grid-template-columns: minmax(0, 1fr) 30px 30px auto !important;
+        }
+        body.app-shell.mobile-version #spotCard .favorite-row select {
+            max-width: 150px !important;
+        }
+        body.app-shell.mobile-version #spotCard .sync-status {
+            white-space: nowrap;
+            font-size: 0.58rem !important;
+            padding: 2px 4px !important;
+        }
+
+        /* 完整資料庫／地圖的隱藏鈕再縮小。 */
+        body.app-shell.mobile-version .compact-hide-btn {
+            min-height: 24px !important;
+            height: 24px !important;
+            padding: 2px 5px !important;
+            font-size: 0.54rem !important;
+            line-height: 1 !important;
+        }
+
+
+        /* V7: 地圖內固定顯示「儲存座標」，拖曳後不需往上找按鈕。 */
+        .leaflet-control.map-save-control {
+            margin-right: 4px !important;
+            margin-bottom: 5px !important;
+            border: 0 !important;
+            background: transparent !important;
+            box-shadow: none !important;
+            display: flex;
+            flex-direction: column;
+            align-items: stretch;
+            gap: 3px;
+            width: 106px;
+            min-width: 106px;
+            max-width: 106px;
+        }
+        .map-spot-name-box {
+            background: rgba(15, 23, 42, 0.94);
+            border: 1px solid var(--border-color);
+            border-radius: 5px;
+            padding: 3px 4px;
+            box-shadow: 0 2px 8px rgba(0,0,0,.28);
+        }
+        .map-spot-name-label {
+            display: block;
+            margin-bottom: 1px;
+            color: var(--accent-blue);
+            font-size: 0.46rem;
+            font-weight: 700;
+            line-height: 1.1;
+        }
+        .map-spot-name-input {
+            width: 100%;
+            min-width: 0;
+            height: 12px !important;
+            min-height: 12px !important;
+            box-sizing: border-box;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            background: #0f172a;
+            color: var(--text-color);
+            padding: 0 3px !important;
+            font-size: 0.46rem !important;
+            font-weight: 600;
+            line-height: 10px;
+            outline: none;
+        }
+        .map-spot-name-input:focus {
+            border-color: var(--accent-blue);
+            box-shadow: 0 0 0 1px rgba(56, 189, 248, 0.25);
+        }
+        .map-save-coordinate-btn {
+            appearance: none;
+            border: 1px solid var(--accent-blue);
+            background: rgba(15, 23, 42, 0.94);
+            color: var(--accent-blue);
+            min-height: 24px;
+            padding: 3px 5px;
+            border-radius: 5px;
+            font-size: 0.55rem;
+            font-weight: 700;
+            cursor: pointer;
+            white-space: nowrap;
+            box-shadow: 0 2px 8px rgba(0,0,0,.28);
+        }
+        .map-save-coordinate-btn.pending {
+            background: rgba(56, 189, 248, 0.22);
+            color: #e0f2fe;
+        }
+        .map-save-coordinate-btn.saved {
+            border-color: var(--success-color);
+            color: #86efac;
+        }
+
+
+        /* 地圖版權標示縮至最低必要顯示；移除 Leaflet 前綴但保留 OSM attribution。 */
+        body.app-shell.mobile-version .leaflet-control-attribution {
+            font-size: 7px !important;
+            line-height: 10px !important;
+            padding: 0 2px !important;
+            opacity: 0.72;
+            white-space: nowrap;
+            background: rgba(255,255,255,0.72) !important;
+        }
+        body.app-shell.mobile-version .leaflet-control-attribution a {
+            font-size: 7px !important;
+        }
+
     </style>
 </head>
-<body>
+<body class="app-shell mobile-version">
 
 <div class="container">
     <div>
         <h1>🌊 釣點海象與活動安全評估儀表板</h1>
-        <p class="subtitle">ECMWF IFS HRES + WAM + 完整資料庫座標對應與活動模式動態評估</p>
     </div>
 
     <!-- 0. 釣點選擇與管理 -->
-    <div class="card">
+    <div class="card" id="spotCard">
         <div class="card-header-flex" style="margin-bottom: 15px;">
             <div class="card-title">📍 釣點選擇</div>
-            <div style="display: flex; gap: 8px;">
-                <button class="toggle-btn" id="toggleAddBoxBtn" onclick="toggleAddBox()">➕ 新增釣點展開</button>
-                <button class="toggle-btn" id="toggleMapBtn" onclick="toggleMapVisibility()">🗺️ 展開地圖</button>
+            <div class="spot-header-actions" style="display: flex; gap: 8px;">
+                <button class="toggle-btn compact-btn" id="toggleAddBoxBtn" onclick="toggleAddBox()">➕ 新增釣點</button>
+                <button class="toggle-btn compact-btn" id="toggleMapBtn" onclick="toggleMapVisibility()">🗺️ 展開地圖</button>
             </div>
         </div>
-        <div class="controls-container" style="border-bottom: 1px solid var(--border-color); padding-bottom: 15px; margin-top: 15px;">
-            <div class="control-group">
+        <div class="controls-container spot-main-row" style="border-bottom: 1px solid var(--border-color); padding-bottom: 15px; margin-top: 15px;">
+            <div class="control-group favorite-row">
                 <label for="locationSelect" style="font-weight: bold; color: var(--accent-blue);">★ 我的常用釣點：</label>
                 <select id="locationSelect" onchange="onLocationChange()"></select>
             </div>
 
-            <button class="delete-btn" onclick="deleteCurrentLocation()">🗑️ 刪除此釣點</button>
-            <button class="toggle-btn" onclick="fetchSunnyFishData()">🔄 重新整理資料</button>
-            <span id="apiStatus" style="font-size: 0.85rem; color: var(--text-muted);">載入中...</span>
+            <button class="delete-btn compact-btn" onclick="deleteCurrentLocation()">🗑️</button>
+            <button class="toggle-btn compact-btn refresh-btn" onclick="fetchSunnyFishData()">🔄</button>
+            <span id="apiStatus" class="sync-status" style="font-size: 0.85rem; color: var(--text-muted);">同步中</span>
         </div>
 
         <!-- 完整資料庫新增釣點 -->
         <div class="database-box" id="addSpotBox" style="display: none;">
-            <div style="font-weight: bold; color: var(--accent-blue); margin-bottom: 10px; font-size: 0.9rem; display: flex; justify-content: space-between; align-items: center;">
+            <div class="section-headline">
                 <span>🌐 依完整資料庫：</span>                                                     
-                <button class="toggle-btn" onclick="toggleAddBox()">✖️ 隱藏</button>
+                <button class="toggle-btn compact-btn compact-hide-btn" onclick="toggleAddBox()">✖️ 隱藏</button>
             </div>
             <div class="controls-container" style="margin-top: 0; border-top: 1px dashed rgba(56, 189, 248, 0.3); padding-top: 12px;">
                 <div class="control-group">
@@ -465,9 +1617,9 @@
             </div>
         </div>
 
-        <!-- 經緯度即時檢視與微調區（含新增釣點名稱欄位） -->
-        <div id="coordsInputWrapper" style="display: none;">
-            <div class="controls-container" style="margin-top: 12px; padding-bottom: 10px; border-bottom: 1px dashed var(--border-color);">
+        <!-- 地圖新增釣點：經緯度欄位隱藏，只顯示釣點名稱與儲存 -->
+        <div id="coordsInputWrapper" class="spot-save-wrapper" aria-hidden="true" style="display: none;">
+            <div class="controls-container spot-save-bar" style="margin-top: 12px; padding-bottom: 0; border-bottom: none;">
                 <div class="control-group">
                     <label style="font-size: 0.85rem; color: var(--text-muted);">經度 (E):</label>
                     <input type="number" id="lonDeg" style="width: 55px;" placeholder="121">°
@@ -482,33 +1634,34 @@
                     <label style="font-size: 0.85rem; color: var(--accent-blue); font-weight: bold;">釣點名稱:</label>
                     <input type="text" id="customSpotName" style="width: 120px;" placeholder="請輸入釣點名稱">
                 </div>
-                <button class="add-btn" onclick="saveCurrentCoords()" style="margin-left: auto;">💾 儲存並加入常用釣點</button>
+                <button class="add-btn spot-save-btn" onclick="saveCurrentCoords()">💾 儲存並加入常用釣點</button>
             </div>
         </div>
 
         <!-- 可隱藏的地圖容器包裝 -->
         <div id="mapContainerWrapper" style="display: none;">
-            <div style="font-weight: bold; color: var(--accent-blue); margin-bottom: 10px; font-size: 0.9rem; display: flex; justify-content: space-between; align-items: center;">
+            <div class="section-headline map-tip-headline">
                     <span>💡 操作提示：您可以從上方下拉選單切換海域，或直接**點擊地圖任意位置**來手動標記你要的作釣點！</span>
-                <button class="toggle-btn" onclick="toggleMapVisibility()">✖️ 隱藏</button>
+                <button class="toggle-btn compact-btn compact-hide-btn" onclick="toggleMapVisibility()">✖️ 隱藏</button>
             </div>
             
             <div id="fishingMap"></div>
+
         </div>
     </div>
 
     <!-- 1. 日期選擇區塊 -->
-    <div class="card">
+    <div class="card" id="dateCard">
         <div class="card-title">📅 選擇日期</div>
-        <div style="margin-top: 15px;" class="date-selector" id="dateSelector"></div>
-        <div class="card-title" style="margin-top: 15px;">⏰ 預定出海時間</div>
-        <div class="controls-container">
-            <div class="control-group">
+        <div style="margin-top: 15px;" class="date-selector compact-date-selector" id="dateSelector"></div>
+        <div class="card-title compact-section-title" style="margin-top: 12px;">⏰ 預定出海時間</div>
+        <div class="controls-container time-control-row">
+            <div class="control-group inline-time-group">
                 <label for="startTime">開始時間：</label>
                 <select id="startTime" onchange="updateDashboard()"></select>
             </div>
 
-            <div class="control-group">
+            <div class="control-group inline-time-group">
                 <label for="windowSize">評估窗口：</label>
                 <select id="windowSize" onchange="updateDashboard()">
                     <option value="2">2 小時</option>
@@ -519,7 +1672,7 @@
                     <option value="12" selected>12 小時</option>
                 </select>
             </div>
-            <div class="control-group" style="background: #0f172a; padding: 4px 10px; border-radius: 6px; border: 1px solid var(--border-color);">
+            <div class="control-group mobile-activity-row compact-activity-row" style="background: #0f172a; padding: 4px 8px; border-radius: 6px; border: 1px solid var(--border-color);">
                 <label for="activityMode" style="font-size: 0.85rem;"><strong>活動模式：</strong></label>
                 <select id="activityMode" onchange="updateDashboard()" style="padding: 4px 8px; font-size: 0.85rem;">
                     <option value="sup">🏄 SUP 槳板模式 (嚴格)</option>
@@ -528,29 +1681,26 @@
             </div>
             <span id="windowDisplay" style="color: var(--accent-blue); font-weight: bold; margin-left: auto;"></span>
         </div>
-        <div class="astro-info-box">
+        <div class="astro-info-box compact-astro-box">
             <div class="astro-item">
                 <span>☀️ 日出日落：</span>
                 <strong id="sunTimeDisplay" style="color: #38bdf8;">--:-- - --:--</strong>
             </div>
             <div style="color: var(--border-color);">|</div>
-            <div class="astro-item">
-                <span>🌙 月相與潮汛：</span>
+            <div class="astro-item moon-astro-item">
+                <span>🌙 月相／潮差傾向：</span>
                 <strong id="moonTimeDisplay" style="color: #38bdf8;">--:-- (計算中)</strong>
             </div>
         </div>
     </div>
 
     <!-- 2. 海況數據 -->
-    <div class="card">
+    <div class="card" id="forecastCard">
         <div class="model-badges">
             <span class="model-tag ecmwf">⚡ ECMWF IFS HRES (大氣風場、氣壓與風向)</span>
             <span class="model-tag wam">🌊 ECMWF WAM (高解析波浪與涌浪)</span>
-            <span class="model-tag tide">🌙 天文潮汐與海流動力學</span>
+            <span class="model-tag tide">🌊 模式海面高度（含潮汐；近岸僅供參考）</span>
 
-            <div style="display: flex; gap: 5px; margin-left: auto;">
-                <button class="toggle-btn" id="toggleStepBtn" onclick="toggleTimeStep()">⏱️ 間隔：1小時</button>
-            </div>
         </div>
 
         <div class="table-container horizontal" id="tableContainer">
@@ -559,7 +1709,7 @@
     </div>
 
     <!-- 3. 當日潮汐與流況詳情圖表 -->
-    <div class="card" style="padding: 0; background: transparent; border: none;">
+    <div class="card" id="tideCard" style="padding: 0; background: transparent; border: none;">
         <div class="tide-card-header">
             <div>
                 選定時間：<b id="tideSelectedTimeDisplay" style="color: var(--accent-blue);">--:--</b> 
@@ -571,7 +1721,7 @@
         </div>
         <div class="tide-chart-container">
             <div style="display: flex; justify-content: space-between; font-size: 0.85rem; color: var(--text-muted); margin-bottom: 5px;">
-                <span>24小時潮位走勢圖 (虛線為目前選定時間)</span>
+                <span>24小時模式潮位走勢圖（虛線為目前選定時間）</span>
                 <span>單位：公尺 (m)</span>
             </div>
             <!-- SVG 潮位走勢圖 -->
@@ -582,22 +1732,25 @@
 
             <!-- 乾滿潮四個極值卡片詳情 -->
             <div class="tide-extremes-grid" id="tideExtremesGrid"></div>
+            <div id="tideSourceNote" style="font-size: 0.72rem; color: var(--text-muted); margin-top: 8px; line-height: 1.45;">
+                潮位資料：Open-Meteo Marine API sea_level_height_msl（含潮汐等海面高度效應；基準為全球平均海平面，非中央氣象署潮位站基準）。
+            </div>
         </div>
     </div>
 
     <!-- 4. 評估結果區 與 活動模式切換 -->
-    <div class="card">
+    <div class="card" id="resultCard">
         <div class="card-header-flex" style="margin-bottom: 10px;">
             <div class="card-title" id="resultCardTitle">📊 綜合評估結果</div>
             <div style="display: flex; gap: 10px; align-items: center;">
-                <button class="toggle-btn" id="toggleConfigBoxBtn" onclick="toggleConfigBox()">⚙️ 展開設定</button>
+                <button class="toggle-btn compact-btn" id="toggleConfigBoxBtn" onclick="toggleConfigBox()">⚙️</button>
             </div>
         </div>
         <div style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 15px;" id="modeDescription">正在載入模式說明...</div>
         
         <div class="results-grid">
             <!-- SUP 評估結果框 -->
-            <div class="result-box" id="supBox">
+            <div class="result-box compact-result-box" id="supBox">
                 <div>
                     <div style="font-weight: bold; margin-bottom: 8px;" id="supBoxTitle">🏄 SUP 出海評估 (安全優先)</div>
                     <div id="supBadge" class="status-badge">計算中...</div>
@@ -616,7 +1769,7 @@
             </div>
 
             <!-- 船釣評估結果框 -->
-            <div class="result-box" id="boatBox">
+            <div class="result-box compact-result-box" id="boatBox">
                 <div>
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
                         <span style="font-weight: bold;">🛥️ 搭船作釣評估 (魚情優先模型)</span>
@@ -928,9 +2081,13 @@
     let timeStep = 1;
     let currentDataByDate = [];
     let astroDataByDate = [];
+    let tideExtremesByDate = [];
+    let tideDataSource = 'none';
 
     let map;
     let currentMarker = null;
+    let mapSaveControl = null;
+    let mapPositionDirty = false;
 
     // 風速（節/kt）轉換為蒲福風級（級）
     function knotsToBeaufort(knots) {
@@ -996,14 +2153,111 @@
         select.value = currentLocationKey;
     }
 
+
+    function syncMapSpotNameInput() {
+        const input = document.getElementById('mapSpotNameInput');
+        const loc = myLocations[currentLocationKey];
+        if (!input || !loc) return;
+        input.value = loc.name.replace('📍 ', '');
+    }
+
+    function syncMainSpotNameFromMap() {
+        const mapInput = document.getElementById('mapSpotNameInput');
+        const mainInput = document.getElementById('customSpotName');
+        if (!mapInput || !mainInput) return;
+        mainInput.value = mapInput.value.trim();
+    }
+
+    function setMapSaveState(state = 'idle') {
+        const btn = document.getElementById('mapSaveCoordinateBtn');
+        if (!btn) return;
+        btn.classList.remove('pending', 'saved');
+        if (state === 'pending') {
+            btn.classList.add('pending');
+            btn.textContent = '💾 儲存此座標';
+        } else if (state === 'saved') {
+            btn.classList.add('saved');
+            btn.textContent = '✅ 已儲存';
+            setTimeout(() => {
+                if (!mapPositionDirty) {
+                    btn.classList.remove('saved');
+                    btn.textContent = '💾 儲存座標';
+                }
+            }, 1200);
+        } else {
+            btn.textContent = '💾 儲存座標';
+        }
+    }
+
+    function markMapPositionDirty() {
+        mapPositionDirty = true;
+        setMapSaveState('pending');
+    }
+
+    function addMapSaveControl() {
+        if (!map || mapSaveControl) return;
+        const SaveControl = L.Control.extend({
+            options: { position: 'bottomright' },
+            onAdd: function() {
+                const container = L.DomUtil.create('div', 'leaflet-control map-save-control');
+
+                const nameBox = L.DomUtil.create('div', 'map-spot-name-box', container);
+                const label = L.DomUtil.create('label', 'map-spot-name-label', nameBox);
+                label.htmlFor = 'mapSpotNameInput';
+                label.textContent = '釣點名稱';
+
+                const input = L.DomUtil.create('input', 'map-spot-name-input', nameBox);
+                input.id = 'mapSpotNameInput';
+                input.type = 'text';
+                input.placeholder = '輸入釣點名稱';
+                input.autocomplete = 'off';
+                const loc = myLocations[currentLocationKey];
+                input.value = loc ? loc.name.replace('📍 ', '') : '';
+
+                const btn = L.DomUtil.create('button', 'map-save-coordinate-btn', container);
+                btn.id = 'mapSaveCoordinateBtn';
+                btn.type = 'button';
+                btn.textContent = '💾 儲存座標';
+                btn.title = '儲存目前釣點名稱與圖釘座標';
+
+                L.DomEvent.disableClickPropagation(container);
+                L.DomEvent.disableScrollPropagation(container);
+                L.DomEvent.on(input, 'click dblclick mousedown touchstart', function(e) {
+                    L.DomEvent.stopPropagation(e);
+                });
+                L.DomEvent.on(input, 'input', function() {
+                    syncMainSpotNameFromMap();
+                });
+                L.DomEvent.on(input, 'keydown', function(e) {
+                    if (e.key === 'Enter') {
+                        L.DomEvent.stop(e);
+                        syncMainSpotNameFromMap();
+                        saveCurrentCoords();
+                    }
+                });
+                L.DomEvent.on(btn, 'click', function(e) {
+                    L.DomEvent.stop(e);
+                    syncMainSpotNameFromMap();
+                    saveCurrentCoords();
+                });
+                return container;
+            }
+        });
+        mapSaveControl = new SaveControl();
+        mapSaveControl.addTo(map);
+    }
+
     function initMap() {
         const loc = myLocations[currentLocationKey] || { lat: 25.122, lon: 121.922 };
         map = L.map('fishingMap').setView([loc.lat, loc.lon], 12);
+        if (map.attributionControl) map.attributionControl.setPrefix(false);
 
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             maxZoom: 18,
             attribution: '© OpenStreetMap contributors'
         }).addTo(map);
+
+        addMapSaveControl();
 
         map.on('click', (e) => {
             const lat = e.latlng.lat;
@@ -1023,6 +2277,7 @@
                 currentMarker = L.marker([lat, lon]).addTo(map);
             }
             map.setView([lat, lon]);
+            markMapPositionDirty();
         });
 
         updateMapMarker();
@@ -1049,10 +2304,13 @@
             document.getElementById('latMin').value = latDM.min;
             document.getElementById('lonDeg').value = lonDM.deg;
             document.getElementById('lonMin').value = lonDM.min;
+            markMapPositionDirty();
         });
 
         currentMarker.bindPopup(`<b>${loc.name}</b><br>緯: ${loc.lat.toFixed(4)} | 經: ${loc.lon.toFixed(4)}<br><i>提示：點擊地圖其他地方可直接移動標記</i>`).openPopup();
         map.setView([loc.lat, loc.lon], 13);
+        mapPositionDirty = false;
+        setMapSaveState('idle');
     }
 
     function toggleMapVisibility() {
@@ -1062,14 +2320,22 @@
         
         if (mapWrapper.style.display === 'none') {
             mapWrapper.style.display = 'block';
-            coordsWrapper.style.display = 'block';
+            if (coordsWrapper) {
+                coordsWrapper.style.display = 'block';
+                coordsWrapper.hidden = false;
+                coordsWrapper.setAttribute('aria-hidden', 'false');
+            }
             toggleMapBtn.textContent = '🗺️ 隱藏地圖';
             if (map) {
                 setTimeout(() => { map.invalidateSize(); }, 100);
             }
         } else {
             mapWrapper.style.display = 'none';
-            coordsWrapper.style.display = 'none';
+            if (coordsWrapper) {
+                coordsWrapper.style.display = 'none';
+                coordsWrapper.hidden = true;
+                coordsWrapper.setAttribute('aria-hidden', 'true');
+            }
             toggleMapBtn.textContent = '🗺️ 展開地圖';
         }
     }
@@ -1079,10 +2345,10 @@
         const toggleBtn = document.getElementById('toggleAddBoxBtn');
         if (addBox.style.display === 'none') {
             addBox.style.display = 'block';
-            toggleBtn.textContent = '✖️ 新增釣點隱藏';
+            toggleBtn.textContent = '✖️ 隱藏新增';
         } else {
             addBox.style.display = 'none';
-            toggleBtn.textContent = '➕ 新增釣點展開';
+            toggleBtn.textContent = '➕ 新增釣點';
         }
     }
 
@@ -1091,10 +2357,10 @@
         const toggleBtn = document.getElementById('toggleConfigBoxBtn');
         if (configBox.style.display === 'none') {
             configBox.style.display = 'block';
-            toggleBtn.textContent = '✖️ 隱藏設定';
+            toggleBtn.textContent = '✖️';
         } else {
             configBox.style.display = 'none';
-            toggleBtn.textContent = '⚙️ 展開設定';
+            toggleBtn.textContent = '⚙️';
         }
     }
 
@@ -1231,6 +2497,7 @@
         document.getElementById('lonMin').value = lonDM.min;
         
         document.getElementById('customSpotName').value = loc.name.replace('📍 ', '');
+        syncMapSpotNameInput();
 
         document.getElementById('configLocationName').textContent = loc.name;
         document.getElementById('cfg_sup_maxWave').value = loc.config?.sup_maxWave ?? DEFAULT_CONFIG.sup_maxWave;
@@ -1252,21 +2519,26 @@
         const boatSec = document.getElementById('boatConfigSection');
         if (supSec && boatSec) {
             if (modeKey === 'sup') {
-                supSec.style.display = 'block';
+                supSec.style.display = 'grid';
                 boatSec.style.display = 'none';
             } else {
                 supSec.style.display = 'none';
-                boatSec.style.display = 'block';
+                boatSec.style.display = 'grid';
             }
         }
     }
 
     function saveCurrentCoords() {
-        const latDeg = parseFloat(document.getElementById('latDeg').value) || 0;
-        const latMin = parseFloat(document.getElementById('latMin').value) || 0;
-        const lonDeg = parseFloat(document.getElementById('lonDeg').value) || 0;
-        const lonMin = parseFloat(document.getElementById('lonMin').value) || 0;
-        const nameInput = document.getElementById('customSpotName').value.trim();
+        const loc = myLocations[currentLocationKey];
+        if (!loc) return;
+
+        const latDeg = parseFloat(document.getElementById('latDeg').value) || Math.floor(loc.lat);
+        const latMin = parseFloat(document.getElementById('latMin').value) || ((loc.lat - Math.floor(loc.lat)) * 60);
+        const lonDeg = parseFloat(document.getElementById('lonDeg').value) || Math.floor(loc.lon);
+        const lonMin = parseFloat(document.getElementById('lonMin').value) || ((loc.lon - Math.floor(loc.lon)) * 60);
+        const mapNameInput = document.getElementById('mapSpotNameInput');
+        const nameInput = (mapNameInput?.value || document.getElementById('customSpotName').value).trim();
+        document.getElementById('customSpotName').value = nameInput;
 
         const lat = latDeg + (latMin / 60);
         const lon = lonDeg + (lonMin / 60);
@@ -1276,28 +2548,47 @@
             return;
         }
 
-        const loc = myLocations[currentLocationKey];
-        if (!loc) return;
+        const originalPlainName = loc.name.replace(/^📍\s*/, '').trim();
+        const enteredPlainName = (nameInput || originalPlainName).replace(/^📍\s*/, '').trim();
+        const newName = `📍 ${enteredPlainName}`;
+        const newLat = parseFloat(lat.toFixed(4));
+        const newLon = parseFloat(lon.toFixed(4));
+        const isNewName = enteredPlainName !== originalPlainName;
 
-        const newName = nameInput ? (nameInput.startsWith('📍 ') ? nameInput : `📍 ${nameInput}`) : loc.name;
-
-        myLocations[currentLocationKey] = {
-            ...loc,
-            name: newName,
-            lat: parseFloat(lat.toFixed(4)),
-            lon: parseFloat(lon.toFixed(4))
-        };
+        if (isNewName) {
+            const newSpotId = `spot_${Date.now()}`;
+            myLocations[newSpotId] = {
+                ...loc,
+                id: newSpotId,
+                name: newName,
+                lat: newLat,
+                lon: newLon,
+                config: { ...(loc.config || DEFAULT_CONFIG) }
+            };
+            currentLocationKey = newSpotId;
+        } else {
+            myLocations[currentLocationKey] = {
+                ...loc,
+                name: newName,
+                lat: newLat,
+                lon: newLon
+            };
+        }
 
         saveMyLocations();
         renderLocationSelect();
-        
         document.getElementById('locationSelect').value = currentLocationKey;
 
         loadConfigToUI();
+        syncMapSpotNameInput();
         updateMapMarker();
         fetchSunnyFishData();
+        mapPositionDirty = false;
+        setMapSaveState('saved');
 
-        alert(`已成功覆蓋更新常用釣點：${newName.replace('📍 ', '')}`);
+        alert(isNewName
+            ? `已新增常用釣點：${enteredPlainName}`
+            : `已更新常用釣點座標：${enteredPlainName}`);
     }
 
     function saveCurrentConfig() {
@@ -1316,6 +2607,10 @@
         };
         saveMyLocations();
         updateDashboard();
+        const configBox = document.getElementById('configBox');
+        const configBtn = document.getElementById('toggleConfigBoxBtn');
+        if (configBox) configBox.style.display = 'none';
+        if (configBtn) configBtn.textContent = '⚙️';
         alert(`✅ 已儲存 ${loc.name} 的專屬評估門檻！`);
     }
 
@@ -1343,23 +2638,25 @@
                 }
             }
             
-            let tideName = '中潮';
+            let tideName = '潮差過渡期';
             let moonIcon = '🌔';
 
+            // 月相只作「潮差傾向」提示，不再直接當作實際潮汐資料。
+            // 真正的當日滿／乾潮時間與潮高改由 sea_level_height_msl 曲線判斷。
             if (lunarDay === 1 || lunarDay === 15 || lunarDay === 16) {
-                tideName = lunarDay === 1 ? '大潮 (初一)' : '大潮 (十五大潮汛)';
+                tideName = '朔望附近（大潮傾向）';
                 moonIcon = lunarDay === 1 ? '🌑' : '🌕';
-            } else if ((lunarDay >= 2 && lunarDay <= 4) || (lunarDay >= 17 && lunarDay <= 19)) {
-                tideName = '中潮帶動';
-                moonIcon = '🌒';
+            } else if ((lunarDay >= 7 && lunarDay <= 9) || (lunarDay >= 22 && lunarDay <= 24)) {
+                tideName = '弦月附近（小潮傾向）';
+                moonIcon = lunarDay < 15 ? '🌓' : '🌗';
             } else {
-                tideName = '小潮';
-                moonIcon = '🌗';
+                tideName = '潮差過渡期';
+                moonIcon = lunarDay < 15 ? '🌒' : '🌖';
             }
 
             return { lunarMonth, lunarDay, isSpringTide: (lunarDay === 1 || lunarDay === 15 || lunarDay === 16), tideName, moonIcon };
         } catch (e) {
-            return { lunarMonth: 1, lunarDay: 1, isSpringTide: true, tideName: '大潮汛', moonIcon: '🌕' };
+            return { lunarMonth: 1, lunarDay: 1, isSpringTide: false, tideName: '潮差傾向待確認', moonIcon: '🌙' };
         }
     }
 
@@ -1421,16 +2718,19 @@
         const loc = myLocations[currentLocationKey];
         if (!loc) return;
 
-        statusEl.textContent = `⚡ 正在調用 ECMWF 預報引擎 (${loc.name})...`;
+        statusEl.textContent = '⏳ 同步中';
         statusEl.style.color = 'var(--accent-blue)';
 
         const weatherUrl = `https://api.open-meteo.com/v1/forecast?latitude=${loc.lat}&longitude=${loc.lon}&hourly=wind_speed_10m,wind_gusts_10m,wind_direction_10m,temperature_2m,surface_pressure,cloud_cover,precipitation,weather_code,is_day&daily=sunrise,sunset,moonrise,moonset&models=ecmwf_ifs&timezone=Asia%2FTaipei&wind_speed_unit=kn`;
         const waveUrl = `https://marine-api.open-meteo.com/v1/marine?latitude=${loc.lat}&longitude=${loc.lon}&hourly=wave_height,wave_period&models=ecmwf_wam&timezone=Asia%2FTaipei&cell_selection=sea`;
         const currentUrl = `https://marine-api.open-meteo.com/v1/marine?latitude=${loc.lat}&longitude=${loc.lon}&hourly=ocean_current_velocity&models=meteofrance_currents&timezone=Asia%2FTaipei&cell_selection=sea`;
+        // 潮位獨立使用 Best Match 海洋模式。sea_level_height_msl 已包含潮汐效應；
+        // 多抓前一天與第 8 天，讓 00:00／23:00 附近的極值也能用前後時點判斷。
+        const tideUrl = `https://marine-api.open-meteo.com/v1/marine?latitude=${loc.lat}&longitude=${loc.lon}&hourly=sea_level_height_msl&models=best_match&timezone=Asia%2FTaipei&cell_selection=sea&past_days=1&forecast_days=8`;
 
         try {
-            const [weatherResRaw, waveResRaw, currentResRaw] = await Promise.all([
-                fetch(weatherUrl), fetch(waveUrl), fetch(currentUrl)
+            const [weatherResRaw, waveResRaw, currentResRaw, tideResRaw] = await Promise.all([
+                fetch(weatherUrl), fetch(waveUrl), fetch(currentUrl), fetch(tideUrl)
             ]);
 
             async function readApiResponse(res, label) {
@@ -1448,17 +2748,25 @@
                 readApiResponse(currentResRaw, 'Ocean Current')
             ]);
 
+            let tideRes = null;
+            try {
+                tideRes = await readApiResponse(tideResRaw, 'Tide / Sea Level');
+            } catch (tideErr) {
+                console.warn('潮位 API 讀取失敗：', tideErr);
+            }
+
             if (weatherRes?.hourly && waveRes?.hourly && currentRes?.hourly) {
-                statusEl.textContent = `✅ ECMWF IFS + WAM + 海流與氣壓數據同步完成`;
-                statusEl.style.color = 'var(--success-color)';
+                tideDataSource = tideRes?.hourly?.sea_level_height_msl ? 'open-meteo' : 'none';
+                statusEl.textContent = tideDataSource === 'open-meteo' ? '✅ 已同步' : '⚠️ 部分同步';
+                statusEl.style.color = tideDataSource === 'open-meteo' ? 'var(--success-color)' : 'var(--warning-color)';
                 if (weatherRes.daily) processAstroData(weatherRes.daily);
-                processModelData(weatherRes.hourly, waveRes.hourly, currentRes.hourly);
+                processModelData(weatherRes.hourly, waveRes.hourly, currentRes.hourly, tideRes?.hourly || null);
             } else {
                 throw new Error('模型回傳資料結構不完整');
             }
         } catch (err) {
             console.error('fetchSunnyFishData:', err);
-            statusEl.textContent = '⚠️ API 讀取失敗，已切換至離線模擬運算';
+            statusEl.textContent = '⚠️ 同步失敗';
             statusEl.style.color = 'var(--warning-color)';
             generateFallbackData();
         }
@@ -1478,8 +2786,85 @@
         }));
     }
 
-    function processModelData(weather, waveMarine, currentMarine) {
-        const MS_TO_KNOTS = 1.94384; 
+    function isFiniteNumber(value) {
+        return typeof value === 'number' && Number.isFinite(value);
+    }
+
+    function formatMinutesToTime(totalMinutes) {
+        let minutes = Math.round(totalMinutes) % 1440;
+        if (minutes < 0) minutes += 1440;
+        const hh = Math.floor(minutes / 60);
+        const mm = minutes % 60;
+        return `${String(hh).padStart(2, '0')}:${String(mm).padStart(2, '0')}`;
+    }
+
+    function refineTideExtremum(prev, cur, next, isoTime) {
+        const hour = parseInt(isoTime.split('T')[1].substring(0, 2), 10) || 0;
+        const denom = prev - 2 * cur + next;
+        let delta = 0;
+        if (Math.abs(denom) > 1e-9) {
+            delta = 0.5 * (prev - next) / denom;
+            delta = Math.max(-1, Math.min(1, delta));
+        }
+        const refinedHeight = Math.abs(denom) > 1e-9
+            ? cur - ((prev - next) * (prev - next)) / (8 * denom)
+            : cur;
+        return {
+            time: formatMinutesToTime(hour * 60 + delta * 60),
+            minuteOfDay: (hour * 60 + delta * 60 + 1440) % 1440,
+            height: Number(refinedHeight.toFixed(2))
+        };
+    }
+
+    function buildTideExtremesByDate(tideMarine) {
+        if (!tideMarine?.time || !tideMarine?.sea_level_height_msl) {
+            return dates.map(() => []);
+        }
+
+        const times = tideMarine.time;
+        const levels = tideMarine.sea_level_height_msl;
+
+        return dates.map(d => {
+            const events = [];
+            for (let i = 1; i < times.length - 1; i++) {
+                if (!times[i].startsWith(d.fullDate)) continue;
+                const prev = levels[i - 1];
+                const cur = levels[i];
+                const next = levels[i + 1];
+                if (![prev, cur, next].every(isFiniteNumber)) continue;
+
+                const risingInto = cur - prev;
+                const leaving = next - cur;
+                let type = null;
+                if (risingInto > 0 && leaving <= 0) type = '滿潮';
+                if (risingInto < 0 && leaving >= 0) type = '乾潮';
+                if (!type) continue;
+
+                const refined = refineTideExtremum(prev, cur, next, times[i]);
+                events.push({ type, ...refined });
+            }
+
+            // 一般臺灣沿岸多呈半日／混合半日潮，通常可辨識 2 滿 2 乾。
+            // 若模型產生額外細小轉折，只保留兩個主要高點與兩個主要低點。
+            const highs = events.filter(e => e.type === '滿潮')
+                .sort((a, b) => b.height - a.height).slice(0, 2);
+            const lows = events.filter(e => e.type === '乾潮')
+                .sort((a, b) => a.height - b.height).slice(0, 2);
+            return [...highs, ...lows].sort((a, b) => a.minuteOfDay - b.minuteOfDay);
+        });
+    }
+
+    function getTideHeightForTime(tideMarine, targetTimeString) {
+        if (!tideMarine?.time || !tideMarine?.sea_level_height_msl) return null;
+        const idx = tideMarine.time.findIndex(t => t.startsWith(targetTimeString));
+        if (idx === -1) return null;
+        const val = tideMarine.sea_level_height_msl[idx];
+        return isFiniteNumber(val) ? Number(val.toFixed(2)) : null;
+    }
+
+    function processModelData(weather, waveMarine, currentMarine, tideMarine) {
+        const MS_TO_KNOTS = 1.94384;
+        tideExtremesByDate = buildTideExtremesByDate(tideMarine);
 
         currentDataByDate = dates.map((d) => {
             const dayData = [];
@@ -1506,7 +2891,7 @@
                 const wavePeriod = (waveIdx !== -1 && waveMarine.wave_period[waveIdx] !== null) ? waveMarine.wave_period[waveIdx] : 7.5;
                 const oceanCurrent = (currentIdx !== -1 && currentMarine.ocean_current_velocity[currentIdx] !== null) ? (currentMarine.ocean_current_velocity[currentIdx] * MS_TO_KNOTS) : 1.2;
 
-                const tideHeight = parseFloat((Math.sin((h / 24) * Math.PI * 2 - 1) * 0.8 + (d.isSpringTide ? 0.2 : 0.0)).toFixed(2));
+                const tideHeight = getTideHeightForTime(tideMarine, targetTimeString);
 
                 let fishIndex = '⭐';
                 if (d.isSpringTide && pressure >= 1010 && pressure <= 1025 && windSpeed < 12 && (h >= 18 || h <= 5)) {
@@ -1550,11 +2935,14 @@
         astroDataByDate = dates.map(() => ({
             sunrise: '05:40', sunset: '18:20', moonrise: '17:30', moonset: '04:30'
         }));
+        tideDataSource = 'none';
+        tideExtremesByDate = dates.map(() => []);
 
         currentDataByDate = dates.map((d) => {
             const data = [];
             for (let i = 0; i < 24; i++) {
-                const tideHeight = parseFloat((Math.sin((i / 24) * Math.PI * 2 - 1) * 0.8).toFixed(2));
+                // 離線備援時不再製造假的潮位；沒有模型資料就明確顯示無資料。
+                const tideHeight = null;
                 const windVal = 9.5;
                 const gustVal = 13.0;
                 data.push({
@@ -1580,6 +2968,18 @@
             return data;
         });
         updateDashboard();
+    }
+
+
+    function applyMobilePreset() {
+        if (window.innerWidth <= 480) {
+            timeStep = 1;
+            populateTimeSelect();
+            document.getElementById('windowSize').value = '6';
+            document.getElementById('activityMode').value = 'sup';
+            document.getElementById('toggleAddBoxBtn').textContent = '➕ 新增釣點';
+            document.getElementById('toggleMapBtn').textContent = '🗺️ 展開地圖';
+        }
     }
 
     function init() {
@@ -1609,14 +3009,15 @@
         });
 
         populateTimeSelect();
+        applyMobilePreset();
         fetchSunnyFishData();
     }
 
     function populateTimeSelect() {
         const timeSelect = document.getElementById('startTime');
-        const currentVal = parseInt(timeSelect.value) || 6;
+        const currentVal = Number.isFinite(parseInt(timeSelect.value)) ? parseInt(timeSelect.value) : 6;
         timeSelect.innerHTML = '';
-        for (let i = 0; i < 24; i += timeStep) {
+        for (let i = 0; i < 24; i += 1) {
             const opt = document.createElement('option');
             opt.value = i;
             opt.textContent = `${String(i).padStart(2, '0')}:00`;
@@ -1633,8 +3034,6 @@
 
     function toggleTimeStep() {
         timeStep = timeStep === 1 ? 2 : (timeStep === 2 ? 3 : 1);
-        document.getElementById('toggleStepBtn').textContent = `⏱️ 間隔：${timeStep}小時`;
-        populateTimeSelect();
         updateDashboard();
     }
 
@@ -1756,21 +3155,45 @@
     function renderTideChart(dayData, startHour) {
         const svg = document.getElementById('tideSvg');
         const extremesGrid = document.getElementById('tideExtremesGrid');
+        const sourceNote = document.getElementById('tideSourceNote');
         if (!dayData || !dayData.length) return;
 
         const selectedItem = dayData[startHour] || dayData[0];
+        const selectedHeight = selectedItem?.tideHeight;
         document.getElementById('tideSelectedTimeDisplay').textContent = selectedItem.time;
-        document.getElementById('tideSelectedHeightDisplay').textContent = `${selectedItem.tideHeight}m`;
-        
-        let tideStateText = '漲潮中';
-        let tideStateClass = 'success';
-        if (startHour > 6 && startHour < 14) {
-            tideStateText = '滿潮轉退';
-            tideStateClass = 'warning';
-        } else if (startHour >= 14 && startHour < 20) {
-            tideStateText = '乾潮中';
-            tideStateClass = 'danger';
+        document.getElementById('tideSelectedHeightDisplay').textContent = isFiniteNumber(selectedHeight) ? `${selectedHeight.toFixed(2)}m` : '--';
+
+        const extremes = tideExtremesByDate[selectedDateIndex] || [];
+        const selectedMinute = startHour * 60;
+        let nearestExtreme = null;
+        let nearestDiff = Infinity;
+        extremes.forEach(ex => {
+            const rawDiff = Math.abs(ex.minuteOfDay - selectedMinute);
+            const diff = Math.min(rawDiff, 1440 - rawDiff);
+            if (diff < nearestDiff) {
+                nearestDiff = diff;
+                nearestExtreme = ex;
+            }
+        });
+
+        let tideStateText = '潮位資料暫無';
+        let tideStateClass = 'info';
+        if (isFiniteNumber(selectedHeight)) {
+            if (nearestExtreme && nearestDiff <= 45) {
+                tideStateText = nearestExtreme.type === '滿潮' ? '滿潮附近' : '乾潮附近';
+                tideStateClass = nearestExtreme.type === '滿潮' ? 'warning' : 'info';
+            } else {
+                const prev = dayData[Math.max(0, startHour - 1)]?.tideHeight;
+                const next = dayData[Math.min(23, startHour + 1)]?.tideHeight;
+                if (isFiniteNumber(prev) && isFiniteNumber(next)) {
+                    tideStateText = next >= prev ? '漲潮中' : '退潮中';
+                    tideStateClass = next >= prev ? 'success' : 'warning';
+                } else {
+                    tideStateText = '潮位變化中';
+                }
+            }
         }
+
         const badgeEl = document.getElementById('tideStatusBadge');
         badgeEl.textContent = tideStateText;
         badgeEl.className = `status-badge ${tideStateClass}`;
@@ -1778,46 +3201,70 @@
         badgeEl.style.padding = '3px 8px';
         badgeEl.style.marginBottom = '0';
 
-        const extremes = [
-            { type: '乾潮', height: '-0.17m', time: '02:17', color: 'var(--accent-blue)' },
-            { type: '滿潮', height: '0.30m', time: '07:42', color: 'var(--danger-color)' },
-            { type: '乾潮', height: '-0.36m', time: '14:43', color: 'var(--accent-blue)' },
-            { type: '滿潮', height: '0.22m', time: '20:42', color: 'var(--danger-color)' }
-        ];
-
         extremesGrid.innerHTML = '';
-        extremes.forEach(ex => {
-            const card = document.createElement('div');
-            card.className = 'tide-extreme-card';
-            card.innerHTML = `
-                <div class="tide-extreme-header" style="color: ${ex.color};">
-                    <span>●</span> <span>${ex.type}</span>
-                </div>
-                <div class="tide-extreme-val">${ex.height}</div>
-                <div class="tide-extreme-time">${ex.time}</div>
+        if (extremes.length) {
+            extremes.forEach(ex => {
+                const card = document.createElement('div');
+                card.className = 'tide-extreme-card';
+                const color = ex.type === '滿潮' ? 'var(--danger-color)' : 'var(--accent-blue)';
+                card.innerHTML = `
+                    <div class="tide-extreme-header" style="color: ${color};">
+                        <span>●</span> <span class="tide-type-two-line">${ex.type.replace('潮', '<br>潮')}</span>
+                    </div>
+                    <div class="tide-extreme-val">${ex.height.toFixed(2)}m</div>
+                    <div class="tide-extreme-time">${ex.time}</div>
+                `;
+                extremesGrid.appendChild(card);
+            });
+        } else {
+            const emptyCard = document.createElement('div');
+            emptyCard.className = 'tide-extreme-card';
+            emptyCard.style.gridColumn = '1 / -1';
+            emptyCard.innerHTML = `
+                <div class="tide-extreme-header" style="color: var(--warning-color);">潮位資料暫無</div>
+                <div class="tide-extreme-time">不再使用固定假潮汐時間或正弦波模擬值。</div>
             `;
-            extremesGrid.appendChild(card);
-        });
+            extremesGrid.appendChild(emptyCard);
+        }
+
+        if (sourceNote) {
+            sourceNote.textContent = tideDataSource === 'open-meteo'
+                ? '潮位資料：Open-Meteo Marine API sea_level_height_msl。此值為模式海面高度（含潮汐、氣壓等效應），基準為全球平均海平面；近岸精度有限，非中央氣象署潮位站潮高。滿／乾潮由當日曲線自動辨識。'
+                : '潮位資料目前無法取得；為避免誤導，本版不再顯示固定或模擬的滿／乾潮時間。';
+        }
 
         const svgWidth = 800;
         const svgHeight = 160;
         const paddingY = 20;
         const usableHeight = svgHeight - paddingY * 2;
+        const numeric = dayData.filter(d => isFiniteNumber(d.tideHeight));
 
-        const heights = dayData.map(d => d.tideHeight);
-        const minH = Math.min(...heights, -0.5);
-        const maxH = Math.max(...heights, 0.5);
-        const rangeH = maxH - minH || 1;
+        if (!numeric.length) {
+            svg.innerHTML = `<text x="400" y="85" text-anchor="middle" fill="#94a3b8" font-size="18">潮位資料暫無</text>`;
+            return;
+        }
 
-        let points = [];
-        dayData.forEach((d, idx) => {
-            const x = (idx / 23) * svgWidth;
-            const y = svgHeight - paddingY - ((d.tideHeight - minH) / rangeH) * usableHeight;
-            points.push(`${x},${y}`);
+        const heights = numeric.map(d => d.tideHeight);
+        const minH = Math.min(...heights);
+        const maxH = Math.max(...heights);
+        const margin = Math.max((maxH - minH) * 0.12, 0.05);
+        const chartMin = minH - margin;
+        const chartMax = maxH + margin;
+        const rangeH = chartMax - chartMin || 1;
+
+        const points = numeric.map(d => {
+            const x = (d.hour / 23) * svgWidth;
+            const y = svgHeight - paddingY - ((d.tideHeight - chartMin) / rangeH) * usableHeight;
+            return `${x},${y}`;
         });
 
         const selectedX = (startHour / 23) * svgWidth;
-        const selectedY = svgHeight - paddingY - ((selectedItem.tideHeight - minH) / rangeH) * usableHeight;
+        const selectedY = isFiniteNumber(selectedHeight)
+            ? svgHeight - paddingY - ((selectedHeight - chartMin) / rangeH) * usableHeight
+            : null;
+        const zeroY = (0 >= chartMin && 0 <= chartMax)
+            ? svgHeight - paddingY - ((0 - chartMin) / rangeH) * usableHeight
+            : null;
 
         svg.innerHTML = `
             <defs>
@@ -1826,11 +3273,11 @@
                     <stop offset="100%" stop-color="#38bdf8" stop-opacity="0.1"/>
                 </linearGradient>
             </defs>
-            <line x1="0" y1="${svgHeight/2}" x2="${svgWidth}" y2="${svgHeight/2}" stroke="#334155" stroke-dasharray="4 4" stroke-width="1" />
+            ${zeroY !== null ? `<line x1="0" y1="${zeroY}" x2="${svgWidth}" y2="${zeroY}" stroke="#334155" stroke-dasharray="4 4" stroke-width="1" />` : ''}
             <polygon points="0,${svgHeight} ${points.join(' ')} ${svgWidth},${svgHeight}" fill="url(#tideGradient)" />
             <polyline points="${points.join(' ')}" fill="none" stroke="#38bdf8" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" />
             <line x1="${selectedX}" y1="0" x2="${selectedX}" y2="${svgHeight}" stroke="#38bdf8" stroke-dasharray="3 3" stroke-width="1.5" />
-            <circle cx="${selectedX}" cy="${selectedY}" r="6" fill="#ffffff" stroke="#38bdf8" stroke-width="3" />
+            ${selectedY !== null ? `<circle cx="${selectedX}" cy="${selectedY}" r="6" fill="#ffffff" stroke="#38bdf8" stroke-width="3" />` : ''}
         `;
     }
 
@@ -1861,6 +3308,11 @@
 
         rows.forEach(r => {
             const tr = document.createElement('tr');
+            if (r.key === 'time') {
+                tr.classList.add('time-step-row');
+                tr.title = '點一下時間列可切換 1 / 2 / 3 小時間隔';
+                tr.addEventListener('click', toggleTimeStep);
+            }
             let html = `<th class="first-col">${r.label}</th>`;
             
             displayData.forEach(d => {
@@ -1870,9 +3322,9 @@
 
                 let cellValue = d[r.key] !== undefined ? d[r.key] : '';
                 if (r.key === 'wind') {
-                    cellValue = `${d.wind}<br><span style="font-size:0.75rem; font-weight:normal;">(${d.windBeaufort}級)</span>`;
+                    cellValue = `${d.wind}<br><span style="font-size:0.42rem; font-weight:normal;">(${d.windBeaufort}級)</span>`;
                 } else if (r.key === 'gust') {
-                    cellValue = `${d.gust}<br><span style="font-size:0.75rem; font-weight:normal;">(${d.gustBeaufort}級)</span>`;
+                    cellValue = `${d.gust}<br><span style="font-size:0.42rem; font-weight:normal;">(${d.gustBeaufort}級)</span>`;
                 }
                 
                 html += `<td class="${levelClass} ${highlightClass}">${cellValue}</td>`;
